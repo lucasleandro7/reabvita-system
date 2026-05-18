@@ -1,0 +1,211 @@
+{% load static %}
+
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Login Profissional</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+
+        min-height: 100vh;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        padding: 20px;
+
+        background-image:
+          linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)),
+          url("{% static 'appointments/images/fundo.jpg' %}");
+
+        background-size: cover;
+        background-position: center;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 420px;
+
+        background: rgba(255, 255, 255, 0.95);
+
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+
+        padding: 35px;
+
+        border-radius: 25px;
+
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      .logo {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      .logo img {
+        width: 120px;
+        height: 120px;
+
+        object-fit: cover;
+
+        border-radius: 50%;
+
+        border: 4px solid #2563eb;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 10px;
+        color: #0f172a;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #64748b;
+        margin-bottom: 25px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #334155;
+      }
+
+      input {
+        width: 100%;
+        padding: 14px;
+
+        margin-bottom: 18px;
+
+        border: 1px solid #cbd5e1;
+
+        border-radius: 12px;
+
+        font-size: 15px;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #2563eb;
+
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+      }
+
+      button {
+        width: 100%;
+        padding: 15px;
+
+        background: #2563eb;
+
+        color: white;
+
+        border: none;
+
+        border-radius: 12px;
+
+        cursor: pointer;
+
+        font-size: 16px;
+        font-weight: bold;
+
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background: #1d4ed8;
+      }
+
+      .error-message {
+        background: #fee2e2;
+        color: #991b1b;
+
+        padding: 12px;
+
+        border-radius: 10px;
+
+        margin-bottom: 20px;
+
+        text-align: center;
+      }
+
+      .back-link {
+        display: block;
+
+        text-align: center;
+
+        margin-top: 20px;
+
+        color: #2563eb;
+
+        text-decoration: none;
+
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="logo">
+        <img
+          src="{% static 'appointments/images/logo.jpg' %}"
+          alt="Logo Reabvita"
+        />
+      </div>
+
+      <h1>Área Profissional</h1>
+
+      <p class="subtitle">Faça login para acessar o sistema</p>
+
+      {% if error %}
+
+      <div class="error-message">Usuário ou senha inválidos.</div>
+
+      {% endif %}
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <label for="username"> Usuário </label>
+
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Digite seu usuário"
+          required
+        />
+
+        <label for="password"> Senha </label>
+
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Digite sua senha"
+          required
+        />
+
+        <button type="submit">Entrar</button>
+      </form>
+
+      <a href="/" class="back-link"> Voltar ao início </a>
+    </div>
+  </body>
+</html>
