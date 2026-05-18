@@ -1,0 +1,324 @@
+{% load static %}
+
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Reabvita</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+
+        background-image:
+          linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)),
+          url("{% static 'appointments/images/fundo.jpg' %}");
+
+        background-size: cover;
+        background-position: center;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 500px;
+
+        background: rgba(255, 255, 255, 0.95);
+
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+
+        padding: 35px;
+
+        border-radius: 25px;
+
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      .logo {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      .logo img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid #2563eb;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 10px;
+        color: #0f172a;
+        font-size: 32px;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #64748b;
+        margin-bottom: 30px;
+        font-size: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #334155;
+        font-weight: bold;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 14px;
+        margin-bottom: 18px;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        font-size: 15px;
+      }
+
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: #2563eb;
+
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+      }
+
+      button {
+        width: 100%;
+        padding: 15px;
+
+        background: #2563eb;
+
+        color: white;
+
+        border: none;
+
+        border-radius: 12px;
+
+        cursor: pointer;
+
+        font-size: 16px;
+        font-weight: bold;
+
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background: #1d4ed8;
+      }
+
+      .success-message {
+        background: #dcfce7;
+        color: #166534;
+
+        padding: 12px;
+
+        border-radius: 10px;
+
+        margin-bottom: 20px;
+
+        text-align: center;
+      }
+
+      .error-message {
+        background: #fee2e2;
+        color: #991b1b;
+
+        padding: 12px;
+
+        border-radius: 10px;
+
+        margin-bottom: 20px;
+
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="logo">
+        <img
+          src="{% static 'appointments/images/logo.jpg' %}"
+          alt="Logo da clínica Reabvita"
+          title="Reabvita"
+        />
+      </div>
+
+      <h1>Reabvita</h1>
+
+      <p class="subtitle">Agende sua consulta de forma rápida e segura</p>
+
+      {% if success %}
+
+      <p class="success-message">Consulta agendada com sucesso!</p>
+
+      {% endif %} {% if error %}
+
+      <p class="error-message">
+        {% if error == True %} Este horário já está ocupado! {% else %} {{ error
+        }} {% endif %}
+      </p>
+
+      {% endif %}
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <label for="name"> Nome </label>
+
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Digite seu nome"
+          title="Digite seu nome"
+          required
+        />
+
+        <label for="phone"> Telefone </label>
+
+        <input
+          type="text"
+          id="phone"
+          name="phone"
+          placeholder="Digite seu telefone"
+          title="Digite seu telefone"
+          required
+        />
+
+        <label for="email"> Email </label>
+
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Digite seu email"
+          title="Digite seu email"
+          required
+        />
+
+        <label for="professional"> Escolha o Atendimento </label>
+
+        <select
+          id="professional"
+          name="professional"
+          title="Escolha o atendimento"
+          required
+        >
+          <option value="">Selecione</option>
+
+          <option value="aline">Fisioterapia - Aline</option>
+
+          <option value="gustavo">Funcional - Gustavo</option>
+        </select>
+
+        <label for="appointment_date"> Data da Consulta </label>
+
+        <input
+          type="date"
+          id="appointment_date"
+          name="appointment_date"
+          min="{{ today }}"
+          title="Selecione a data"
+          required
+        />
+
+        <label for="appointment_time"> Horário </label>
+
+        <select
+          id="appointment_time"
+          name="appointment_time"
+          title="Selecione o horário"
+          required
+        >
+          <option value="">Selecione um horário</option>
+
+          {% for time in available_times %}
+
+          <option value="{{ time }}">{{ time }}</option>
+
+          {% endfor %}
+        </select>
+
+        <button type="submit">Agendar Consulta</button>
+      </form>
+    </div>
+
+    <script>
+      const professional = document.getElementById("professional");
+
+      const appointmentDate = document.getElementById("appointment_date");
+
+      const appointmentTime = document.getElementById("appointment_time");
+
+      async function updateAvailableTimes() {
+        const selectedProfessional = professional.value;
+
+        const selectedDate = appointmentDate.value;
+
+        if (!selectedProfessional || !selectedDate) {
+          return;
+        }
+
+        const response = await fetch(
+          `/available-times/?date=${selectedDate}&professional=${selectedProfessional}`,
+        );
+
+        const data = await response.json();
+
+        appointmentTime.innerHTML = "";
+
+        const defaultOption = document.createElement("option");
+
+        defaultOption.value = "";
+
+        defaultOption.textContent = "Selecione um horário";
+
+        appointmentTime.appendChild(defaultOption);
+
+        if (data.available_times.length === 0) {
+          const option = document.createElement("option");
+
+          option.value = "";
+
+          option.textContent = "Nenhum horário disponível";
+
+          appointmentTime.appendChild(option);
+        } else {
+          data.available_times.forEach(function (time) {
+            const option = document.createElement("option");
+
+            option.value = time;
+
+            option.textContent = time;
+
+            appointmentTime.appendChild(option);
+          });
+        }
+      }
+
+      professional.addEventListener("change", updateAvailableTimes);
+
+      appointmentDate.addEventListener("change", updateAvailableTimes);
+    </script>
+  </body>
+</html>

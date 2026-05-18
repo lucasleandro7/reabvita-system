@@ -1,0 +1,245 @@
+{% load static %}
+
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Cancelar Consulta</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+
+        background-image:
+          linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)),
+          url("{% static 'appointments/images/fundo.jpg' %}");
+
+        background-size: cover;
+        background-position: center;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 700px;
+        background: rgba(255, 255, 255, 0.95);
+
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+
+        padding: 35px;
+        border-radius: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      .logo {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      .logo img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid #2563eb;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 10px;
+        color: #0f172a;
+        font-size: 32px;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #64748b;
+        margin-bottom: 30px;
+      }
+
+      .success-message {
+        background: #dcfce7;
+        color: #166534;
+        padding: 12px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      form {
+        margin-bottom: 30px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #334155;
+        font-weight: bold;
+      }
+
+      input {
+        width: 100%;
+        padding: 14px;
+        margin-bottom: 18px;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        font-size: 15px;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+      }
+
+      button {
+        width: 100%;
+        padding: 15px;
+        background: #dc2626;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background: #b91c1c;
+      }
+
+      .appointment-card {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        border-left: 8px solid #2563eb;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .appointment-info {
+        margin-bottom: 8px;
+        color: #334155;
+      }
+
+      .cancel-btn {
+        margin-top: 15px;
+      }
+
+      .back-btn {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        text-decoration: none;
+        background: #2563eb;
+        color: white;
+        padding: 14px;
+        border-radius: 12px;
+        transition: 0.3s;
+      }
+
+      .back-btn:hover {
+        background: #1d4ed8;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="logo">
+        <img
+          src="{% static 'appointments/images/logo.jpg' %}"
+          alt="Logo da clínica Reabvita"
+          title="Reabvita"
+        />
+      </div>
+
+      <h1>Cancelar Consulta</h1>
+
+      <p class="subtitle">Informe seu email para localizar consultas</p>
+
+      {% if success %}
+      <div class="success-message">Consulta cancelada com sucesso!</div>
+      {% endif %}
+
+      <form method="GET">
+        <label for="email"> Email </label>
+
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Digite seu email"
+          title="Digite seu email"
+          required
+        />
+
+        <button type="submit">Buscar Consultas</button>
+      </form>
+
+      {% for appointment in appointments %}
+
+      <div class="appointment-card">
+        <div class="appointment-info">
+          <strong>Paciente:</strong>
+          {{ appointment.name }}
+        </div>
+
+        <div class="appointment-info">
+          <strong>Atendimento:</strong>
+          {{ appointment.get_professional_display }}
+        </div>
+
+        <div class="appointment-info">
+          <strong>Data:</strong>
+          {{ appointment.appointment_date }}
+        </div>
+
+        <div class="appointment-info">
+          <strong>Horário:</strong>
+          {{ appointment.appointment_time }}
+        </div>
+
+        <form method="POST">
+          {% csrf_token %}
+
+          <input
+            type="hidden"
+            name="appointment_id"
+            value="{{ appointment.id }}"
+          />
+
+          <button
+            type="submit"
+            class="cancel-btn"
+            onclick="
+              return confirm('Tem certeza que deseja cancelar esta consulta?');
+            "
+          >
+            Cancelar Consulta
+          </button>
+        </form>
+      </div>
+
+      {% endfor %}
+
+      <a href="/" class="back-btn"> Voltar para Agendamento </a>
+    </div>
+  </body>
+</html>

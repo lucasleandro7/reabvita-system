@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background: #f1f5f9;
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        width: 250px;
+        background: #0f172a;
+        padding: 30px 20px;
+      }
+
+      .sidebar h2 {
+        color: white;
+        margin-bottom: 40px;
+        text-align: center;
+      }
+
+      .sidebar a {
+        display: block;
+        color: #cbd5e1;
+        text-decoration: none;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        transition: 0.3s;
+      }
+
+      .sidebar a:hover {
+        background: #1e293b;
+        color: white;
+      }
+
+      .content {
+        flex: 1;
+        padding: 30px;
+      }
+
+      h1 {
+        margin-bottom: 30px;
+        color: #0f172a;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+
+      .card {
+        background: white;
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .total-card {
+        border-left: 8px solid #2563eb;
+      }
+
+      .today-card {
+        border-left: 8px solid #ea580c;
+      }
+
+      .aline-card {
+        border-left: 8px solid #2563eb;
+      }
+
+      .gustavo-card {
+        border-left: 8px solid #16a34a;
+      }
+
+      .card h2 {
+        color: #64748b;
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+
+      .card p {
+        font-size: 32px;
+        font-weight: bold;
+        color: #2563eb;
+      }
+
+      .appointments {
+        background: white;
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .appointments h2 {
+        margin-bottom: 20px;
+      }
+
+      .appointment {
+        padding: 15px 0;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .appointment:last-child {
+        border: none;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          flex-direction: column;
+        }
+
+        .sidebar {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <h2>Reabvita</h2>
+
+      <a href="/dashboard/"> Dashboard </a>
+
+      <a href="/schedule/"> Agenda </a>
+
+      <a href="/"> Novo Agendamento </a>
+
+      <a href="/cancel/"> Cancelar Consulta </a>
+
+      <a href="/admin/logout/"> Sair </a>
+    </div>
+
+    <div class="content">
+      <h1>Dashboard da Clínica</h1>
+
+      <div class="cards">
+        <div class="card total-card">
+          <h2>Total de Consultas</h2>
+          <p>{{ total_appointments }}</p>
+        </div>
+
+        <div class="card today-card">
+          <h2>Consultas Hoje</h2>
+          <p>{{ today_appointments }}</p>
+        </div>
+
+        <div class="card aline-card">
+          <h2>Fisioterapia - Aline</h2>
+          <p>{{ aline_appointments }}</p>
+        </div>
+
+        <div class="card gustavo-card">
+          <h2>Funcional - Gustavo</h2>
+          <p>{{ gustavo_appointments }}</p>
+        </div>
+      </div>
+
+      <div class="appointments">
+        <h2>Próximas Consultas</h2>
+
+        {% for appointment in next_appointments %}
+
+        <div class="appointment">
+          <strong> {{ appointment.name }} </strong>
+
+          - {{ appointment.get_professional_display }} -
+          {{appointment.appointment_date }} às {{ appointment.appointment_time}}
+        </div>
+
+        {% empty %}
+
+        <p>Nenhuma consulta encontrada.</p>
+
+        {% endfor %}
+      </div>
+    </div>
+  </body>
+</html>

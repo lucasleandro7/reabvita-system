@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Agenda de Consultas</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f1f5f9;
+        padding: 40px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #0f172a;
+      }
+
+      .filter-form {
+        max-width: 900px;
+        margin: auto;
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .filter-form label {
+        font-weight: bold;
+        color: #334155;
+      }
+
+      .filter-form input,
+      .filter-form select {
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+      }
+
+      .filter-form button {
+        padding: 12px 20px;
+        border: none;
+        background: #2563eb;
+        color: white;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+
+      .clear-btn {
+        background: #64748b;
+        color: white;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 10px;
+      }
+
+      .appointments {
+        max-width: 900px;
+        margin: auto;
+      }
+
+      .section-title {
+        margin-bottom: 20px;
+        color: #0f172a;
+      }
+
+      .card {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .aline {
+        border-left: 8px solid #2563eb;
+      }
+
+      .gustavo {
+        border-left: 8px solid #16a34a;
+      }
+
+      .date {
+        color: #2563eb;
+        font-size: 20px;
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
+
+      .info {
+        margin-bottom: 8px;
+        color: #334155;
+      }
+
+      .whatsapp-link {
+        color: #16a34a;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      .delete-btn {
+        display: inline-block;
+        margin-top: 15px;
+        background: #dc2626;
+        color: white;
+        text-decoration: none;
+        padding: 10px 15px;
+        border-radius: 10px;
+        transition: 0.3s;
+      }
+
+      .delete-btn:hover {
+        background: #b91c1c;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Agenda de Consultas</h1>
+
+    <form method="GET" class="filter-form">
+      <label for="date-filter"> Data </label>
+
+      <input
+        type="date"
+        id="date-filter"
+        name="date"
+        value="{{ selected_date }}"
+        title="Selecione uma data"
+      />
+
+      {% if request.user.is_superuser %}
+
+      <label for="professional-filter"> Profissional </label>
+
+      <select
+        id="professional-filter"
+        name="professional"
+        title="Selecione o profissional"
+      >
+        <option value="">Todos Profissionais</option>
+
+        <option
+          value="aline"
+          {%
+          if
+          selected_professional=""
+          ="aline"
+          %}
+          selected
+          {%
+          endif
+          %}
+        >
+          Fisioterapia - Aline
+        </option>
+
+        <option
+          value="gustavo"
+          {%
+          if
+          selected_professional=""
+          ="gustavo"
+          %}
+          selected
+          {%
+          endif
+          %}
+        >
+          Funcional - Gustavo
+        </option>
+      </select>
+
+      {% endif %}
+
+      <label for="search-filter"> Paciente </label>
+
+      <input
+        type="text"
+        id="search-filter"
+        name="search"
+        placeholder="Buscar paciente"
+        value="{{ search }}"
+        title="Buscar paciente"
+      />
+
+      <button type="submit">Filtrar</button>
+
+      <a href="/schedule/" class="clear-btn"> Limpar </a>
+    </form>
+
+    <div class="appointments">
+      <h2 class="section-title">Agenda Geral</h2>
+
+      {% for appointment in appointments %}
+
+      <div
+        class="card {% if appointment.professional == 'aline' %} aline {% endif %} {% if appointment.professional == 'gustavo' %} gustavo {% endif %}"
+      >
+        <div class="date">
+          {{ appointment.appointment_date }} às {{appointment.appointment_time}}
+        </div>
+
+        <div class="info">
+          <strong>Atendimento:</strong>
+          {{ appointment.get_professional_display }}
+        </div>
+
+        <div class="info">
+          <strong>Paciente:</strong>
+          {{ appointment.name }}
+        </div>
+
+        <div class="info">
+          <strong>Telefone:</strong>
+
+          <a
+            href="https://wa.me/55{{ appointment.phone }}"
+            target="_blank"
+            rel="noopener"
+            class="whatsapp-link"
+          >
+            {{ appointment.phone }}
+          </a>
+        </div>
+
+        <div class="info">
+          <strong>Email:</strong>
+          {{ appointment.email }}
+        </div>
+
+        <a
+          href="/delete/{{ appointment.id }}/"
+          class="delete-btn"
+          onclick="
+            return confirm('Tem certeza que deseja excluir esta consulta?');
+          "
+        >
+          Excluir Consulta
+        </a>
+      </div>
+
+      {% empty %}
+
+      <div class="card">Nenhuma consulta encontrada.</div>
+
+      {% endfor %}
+    </div>
+  </body>
+</html>
