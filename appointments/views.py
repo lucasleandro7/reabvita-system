@@ -467,8 +467,8 @@ def calendar_view(request):
 
         events.append({
             'title': (
-                f'{appointment.name} - '
-                f'{appointment.appointment_time}'
+                f'{str(appointment.appointment_time)[:5]} - '
+                f'{appointment.name}'
             ),
             'start': (
                 f'{appointment.appointment_date}'
