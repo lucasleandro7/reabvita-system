@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+from django.utils import timezone
 from datetime import date, datetime
 from .models import Appointment
 
@@ -90,7 +91,7 @@ def index(request):
         'success': success,
         'error': error,
         'available_times': AVAILABLE_TIMES,
-        'today': date.today().isoformat()
+        'today': timezone.localdate().isoformat()
     })
 
 
@@ -117,11 +118,11 @@ def get_available_times(request):
         if time not in booked_times
     ]
 
-    today = date.today().isoformat()
+    today = timezone.localdate().isoformat()
 
     if selected_date == today:
 
-        current_time = datetime.now().strftime('%H:%M')
+        current_time = timezone.localtime().strftime('%H:%M')
 
         available_times = [
             time for time in available_times
