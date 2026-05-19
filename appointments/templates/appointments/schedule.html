@@ -1,3 +1,5 @@
+{% load static %}
+
 <!doctype html>
 <html lang="pt-br">
   <head>
@@ -8,248 +10,347 @@
     <title>Agenda de Consultas</title>
 
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       body {
         font-family: Arial, sans-serif;
+
+        min-height: 100vh;
+
+        padding: 30px;
+
         background: #f1f5f9;
-        padding: 40px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: auto;
       }
 
       h1 {
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
         color: #0f172a;
       }
 
-      .filter-form {
-        max-width: 900px;
-        margin: auto;
-        margin-bottom: 20px;
+      .top-actions {
         display: flex;
+        justify-content: center;
         gap: 10px;
-        align-items: center;
-        flex-wrap: wrap;
+        margin-bottom: 25px;
       }
 
-      .filter-form label {
+      .nav-btn {
+        padding: 10px 18px;
+        border-radius: 10px;
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+
+      .dashboard-btn {
+        background: #2563eb;
+      }
+
+      .dashboard-btn:hover {
+        background: #1d4ed8;
+      }
+
+      .home-btn {
+        background: #16a34a;
+      }
+
+      .home-btn:hover {
+        background: #15803d;
+      }
+
+      .filter-form {
+        background: white;
+
+        padding: 20px;
+
+        border-radius: 20px;
+
+        margin-bottom: 25px;
+
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        align-items: end;
+      }
+
+      .field {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
         font-weight: bold;
         color: #334155;
       }
 
-      .filter-form input,
-      .filter-form select {
+      input,
+      select {
+        width: 100%;
         padding: 12px;
-        border: 1px solid #ccc;
+
+        border: 1px solid #cbd5e1;
+
         border-radius: 10px;
+
+        font-size: 14px;
       }
 
-      .filter-form button {
+      .btn {
         padding: 12px 20px;
+
         border: none;
-        background: #2563eb;
-        color: white;
+
         border-radius: 10px;
+
         cursor: pointer;
+
+        font-weight: bold;
+
+        color: white;
+
+        text-decoration: none;
+
+        transition: 0.3s;
+      }
+
+      .filter-btn {
+        background: #2563eb;
+      }
+
+      .filter-btn:hover {
+        background: #1d4ed8;
       }
 
       .clear-btn {
         background: #64748b;
-        color: white;
-        text-decoration: none;
-        padding: 12px 20px;
-        border-radius: 10px;
       }
 
-      .appointments {
-        max-width: 900px;
-        margin: auto;
+      .clear-btn:hover {
+        background: #475569;
       }
 
-      .section-title {
+      .appointments-box {
+        background: white;
+
+        padding: 25px;
+
+        border-radius: 20px;
+
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      h2 {
         margin-bottom: 20px;
         color: #0f172a;
       }
 
-      .card {
-        background: white;
-        padding: 20px;
-        border-radius: 15px;
-        margin-bottom: 20px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      table {
+        width: 100%;
+        border-collapse: collapse;
       }
 
-      .aline {
-        border-left: 8px solid #2563eb;
+      th {
+        background: #2563eb;
+        color: white;
+        padding: 14px;
+        text-align: left;
       }
 
-      .gustavo {
-        border-left: 8px solid #16a34a;
+      td {
+        padding: 14px;
+        border-bottom: 1px solid #e2e8f0;
       }
 
-      .date {
-        color: #2563eb;
-        font-size: 20px;
-        margin-bottom: 10px;
-        font-weight: bold;
-      }
-
-      .info {
-        margin-bottom: 8px;
-        color: #334155;
-      }
-
-      .whatsapp-link {
-        color: #16a34a;
-        text-decoration: none;
-        font-weight: bold;
+      tr:hover {
+        background: #f8fafc;
       }
 
       .delete-btn {
-        display: inline-block;
-        margin-top: 15px;
         background: #dc2626;
         color: white;
+        padding: 8px 12px;
+        border-radius: 8px;
         text-decoration: none;
-        padding: 10px 15px;
-        border-radius: 10px;
-        transition: 0.3s;
+        font-size: 13px;
+        font-weight: bold;
       }
 
       .delete-btn:hover {
         background: #b91c1c;
       }
+
+      .empty {
+        text-align: center;
+        color: #64748b;
+        padding: 20px;
+      }
+
+      @media (max-width: 768px) {
+        .filter-form {
+          flex-direction: column;
+        }
+
+        .field {
+          width: 100%;
+        }
+
+        table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
     </style>
   </head>
 
   <body>
-    <h1>Agenda de Consultas</h1>
+    <div class="container">
+      <h1>Agenda de Consultas</h1>
 
-    <form method="GET" class="filter-form">
-      <label for="date-filter"> Data </label>
+      <div class="top-actions">
+        <a href="/dashboard/" class="nav-btn dashboard-btn"> Dashboard </a>
 
-      <input
-        type="date"
-        id="date-filter"
-        name="date"
-        value="{{ selected_date }}"
-        title="Selecione uma data"
-      />
-
-      {% if request.user.is_superuser %}
-
-      <label for="professional-filter"> Profissional </label>
-
-      <select
-        id="professional-filter"
-        name="professional"
-        title="Selecione o profissional"
-      >
-        <option value="">Todos Profissionais</option>
-
-        <option
-          value="aline"
-          {%
-          if
-          selected_professional=""
-          ="aline"
-          %}
-          selected
-          {%
-          endif
-          %}
-        >
-          Fisioterapia - Aline
-        </option>
-
-        <option
-          value="gustavo"
-          {%
-          if
-          selected_professional=""
-          ="gustavo"
-          %}
-          selected
-          {%
-          endif
-          %}
-        >
-          Funcional - Gustavo
-        </option>
-      </select>
-
-      {% endif %}
-
-      <label for="search-filter"> Paciente </label>
-
-      <input
-        type="text"
-        id="search-filter"
-        name="search"
-        placeholder="Buscar paciente"
-        value="{{ search }}"
-        title="Buscar paciente"
-      />
-
-      <button type="submit">Filtrar</button>
-
-      <a href="/schedule/" class="clear-btn"> Limpar </a>
-    </form>
-
-    <div class="appointments">
-      <h2 class="section-title">Agenda Geral</h2>
-
-      {% for appointment in appointments %}
-
-      <div
-        class="card {% if appointment.professional == 'aline' %} aline {% endif %} {% if appointment.professional == 'gustavo' %} gustavo {% endif %}"
-      >
-        <div class="date">
-          {{ appointment.appointment_date }} às {{appointment.appointment_time}}
-        </div>
-
-        <div class="info">
-          <strong>Atendimento:</strong>
-          {{ appointment.get_professional_display }}
-        </div>
-
-        <div class="info">
-          <strong>Paciente:</strong>
-          {{ appointment.name }}
-        </div>
-
-        <div class="info">
-          <strong>Telefone:</strong>
-
-          <a
-            href="https://wa.me/55{{ appointment.phone }}"
-            target="_blank"
-            rel="noopener"
-            class="whatsapp-link"
-          >
-            {{ appointment.phone }}
-          </a>
-        </div>
-
-        <div class="info">
-          <strong>Email:</strong>
-          {{ appointment.email }}
-        </div>
-
-        <a
-          href="/delete/{{ appointment.id }}/"
-          class="delete-btn"
-          onclick="
-            return confirm('Tem certeza que deseja excluir esta consulta?');
-          "
-        >
-          Excluir Consulta
-        </a>
+        <a href="/" class="nav-btn home-btn"> Início </a>
       </div>
 
-      {% empty %}
+      <form method="GET" class="filter-form">
+        <div class="field">
+          <label for="date"> Data </label>
 
-      <div class="card">Nenhuma consulta encontrada.</div>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            value="{{ selected_date }}"
+          />
+        </div>
 
-      {% endfor %}
+        <div class="field">
+          <label for="search"> Paciente </label>
+
+          <input
+            type="text"
+            id="search"
+            name="search"
+            placeholder="Buscar paciente"
+            value="{{ search }}"
+          />
+        </div>
+
+        {% if request.user.is_superuser %}
+
+        <div class="field">
+          <label for="professional"> Profissional </label>
+
+          <select id="professional" name="professional">
+            <option value="">Todos</option>
+
+            <option
+              value="aline"
+              {%
+              if
+              selected_professional=""
+              ="aline"
+              %}
+              selected
+              {%
+              endif
+              %}
+            >
+              Fisioterapia - Aline
+            </option>
+
+            <option
+              value="gustavo"
+              {%
+              if
+              selected_professional=""
+              ="gustavo"
+              %}
+              selected
+              {%
+              endif
+              %}
+            >
+              Funcional - Gustavo
+            </option>
+          </select>
+        </div>
+
+        {% endif %}
+
+        <button type="submit" class="btn filter-btn">Filtrar</button>
+
+        <a href="/schedule/" class="btn clear-btn"> Limpar </a>
+      </form>
+
+      <div class="appointments-box">
+        <h2>Agenda Geral</h2>
+
+        {% if appointments %}
+
+        <table>
+          <thead>
+            <tr>
+              <th>Paciente</th>
+
+              <th>Telefone</th>
+
+              <th>Profissional</th>
+
+              <th>Data</th>
+
+              <th>Horário</th>
+
+              <th>Ações</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for appointment in appointments %}
+
+            <tr>
+              <td>{{ appointment.name }}</td>
+
+              <td>{{ appointment.phone }}</td>
+
+              <td>{{ appointment.professional }}</td>
+
+              <td>{{ appointment.appointment_date }}</td>
+
+              <td>{{ appointment.appointment_time }}</td>
+
+              <td>
+                <a href="/delete/{{ appointment.id }}/" class="delete-btn">
+                  Excluir
+                </a>
+              </td>
+            </tr>
+
+            {% endfor %}
+          </tbody>
+        </table>
+
+        {% else %}
+
+        <div class="empty">Nenhuma consulta encontrada.</div>
+
+        {% endif %}
+      </div>
     </div>
   </body>
 </html>
