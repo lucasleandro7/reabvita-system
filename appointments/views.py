@@ -15,8 +15,24 @@ AVAILABLE_TIMES = [
     '15:00',
     '16:00',
     '17:00',
-    '18:00'
+    '18:00',
 ]
+
+
+def get_user_professional(user):
+
+    username = user.username.lower()
+
+    if user.is_superuser:
+        return None
+
+    if 'aline' in username:
+        return 'aline'
+
+    if 'gustavo' in username:
+        return 'gustavo'
+
+    return None
 
 
 def index(request):
@@ -155,20 +171,16 @@ def schedule(request):
     selected_professional = request.GET.get('professional')
     search = request.GET.get('search')
 
+    user_professional = get_user_professional(request.user)
+
     if request.user.is_superuser:
 
         appointments = Appointment.objects.all()
 
-    elif request.user.username == 'aline':
+    elif user_professional:
 
         appointments = Appointment.objects.filter(
-            professional='aline'
-        )
-
-    elif request.user.username == 'gustavo':
-
-        appointments = Appointment.objects.filter(
-            professional='gustavo'
+            professional=user_professional
         )
 
     else:
@@ -209,20 +221,16 @@ def schedule(request):
 @login_required
 def dashboard(request):
 
+    user_professional = get_user_professional(request.user)
+
     if request.user.is_superuser:
 
         appointments = Appointment.objects.all()
 
-    elif request.user.username == 'aline':
+    elif user_professional:
 
         appointments = Appointment.objects.filter(
-            professional='aline'
-        )
-
-    elif request.user.username == 'gustavo':
-
-        appointments = Appointment.objects.filter(
-            professional='gustavo'
+            professional=user_professional
         )
 
     else:
@@ -262,24 +270,19 @@ def dashboard(request):
 @login_required
 def delete_appointment(request, appointment_id):
 
+    user_professional = get_user_professional(request.user)
+
     if request.user.is_superuser:
 
         appointment = Appointment.objects.get(
             id=appointment_id
         )
 
-    elif request.user.username == 'aline':
+    elif user_professional:
 
         appointment = Appointment.objects.get(
             id=appointment_id,
-            professional='aline'
-        )
-
-    elif request.user.username == 'gustavo':
-
-        appointment = Appointment.objects.get(
-            id=appointment_id,
-            professional='gustavo'
+            professional=user_professional
         )
 
     else:
@@ -290,6 +293,7 @@ def delete_appointment(request, appointment_id):
 
     return redirect('/schedule/')
 
+
 def professional_login(request):
 
     error = False
@@ -297,7 +301,6 @@ def professional_login(request):
     if request.method == 'POST':
 
         username = request.POST.get('username')
-
         password = request.POST.get('password')
 
         user = authenticate(
