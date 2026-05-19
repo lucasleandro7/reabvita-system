@@ -10,6 +10,7 @@ from .views import (
     professional_login,
     professional_logout,
     my_appointments,
+    calendar_view,
 )
 
 urlpatterns = [
@@ -49,6 +50,12 @@ urlpatterns = [
         my_appointments,
         name='my_appointments'
     ),
+
+    path(
+    'calendar/',
+    calendar_view,
+    name='calendar'
+),
 
     path(
         'schedule/',

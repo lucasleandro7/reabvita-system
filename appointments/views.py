@@ -439,3 +439,46 @@ def create_admin_temp(request):
         request,
         'appointments/admin_created.html'
     )
+
+@login_required
+def calendar_view(request):
+
+    user_professional = get_user_professional(
+        request.user
+    )
+
+    if request.user.is_superuser:
+
+        appointments = Appointment.objects.all()
+
+    elif user_professional:
+
+        appointments = Appointment.objects.filter(
+            professional=user_professional
+        )
+
+    else:
+
+        appointments = Appointment.objects.none()
+
+    events = []
+
+    for appointment in appointments:
+
+        events.append({
+            'title': (
+                f'{appointment.name} - '
+                f'{appointment.appointment_time}'
+            ),
+            'start': (
+                f'{appointment.appointment_date}'
+            ),
+        })
+
+    return render(
+        request,
+        'appointments/calendar.html',
+        {
+            'events': events
+        }
+    )
