@@ -1,0 +1,236 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Editar Consulta</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            font-family:Arial,sans-serif;
+            background:#f1f5f9;
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            padding:20px;
+        }
+
+        .container{
+            width:100%;
+            max-width:600px;
+            background:white;
+            padding:35px;
+            border-radius:20px;
+            box-shadow:
+                0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        h1{
+            text-align:center;
+            margin-bottom:25px;
+            color:#0f172a;
+        }
+
+        form{
+            display:flex;
+            flex-direction:column;
+            gap:18px;
+        }
+
+        label{
+            font-weight:bold;
+            color:#334155;
+        }
+
+        input,
+        select{
+            width:100%;
+            padding:14px;
+            border:1px solid #cbd5e1;
+            border-radius:12px;
+            font-size:16px;
+        }
+
+        button{
+            padding:15px;
+            border:none;
+            border-radius:12px;
+            background:#2563eb;
+            color:white;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+        }
+
+        button:hover{
+            background:#1d4ed8;
+        }
+
+        .back-btn{
+            display:block;
+            text-align:center;
+            margin-top:15px;
+            text-decoration:none;
+            color:#475569;
+            font-weight:bold;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Editar Consulta</h1>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div>
+
+                <label>Nome</label>
+
+                <input
+                    type="text"
+                    name="name"
+                    value="{{ appointment.name }}"
+                    required
+                >
+
+            </div>
+
+            <div>
+
+                <label>Telefone</label>
+
+                <input
+                    type="text"
+                    name="phone"
+                    value="{{ appointment.phone }}"
+                    required
+                >
+
+            </div>
+
+            <div>
+
+                <label>Email</label>
+
+                <input
+                    type="email"
+                    name="email"
+                    value="{{ appointment.email }}"
+                    required
+                >
+
+            </div>
+
+            <div>
+
+                <label>Profissional</label>
+
+                <select
+                    name="professional"
+                    required
+                >
+
+                    <option
+                        value="aline"
+                        {% if appointment.professional == 'aline' %}
+                        selected
+                        {% endif %}
+                    >
+                        Aline
+                    </option>
+
+                    <option
+                        value="gustavo"
+                        {% if appointment.professional == 'gustavo' %}
+                        selected
+                        {% endif %}
+                    >
+                        Gustavo
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div>
+
+                <label>Data</label>
+
+                <input
+                    type="date"
+                    name="appointment_date"
+                    value="{{ appointment.appointment_date|date:'Y-m-d' }}"
+                    required
+                >
+
+            </div>
+
+            <div>
+
+                <label>Horário</label>
+
+                <select
+                    name="appointment_time"
+                    required
+                >
+
+                    {% for time in available_times %}
+
+                        <option
+                            value="{{ time }}"
+                            {% if appointment.appointment_time|stringformat:"s"|slice:":5" == time %}
+                            selected
+                            {% endif %}
+                        >
+                            {{ time }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+            <button type="submit">
+                Salvar Alterações
+            </button>
+
+        </form>
+
+        <a
+            href="/schedule/"
+            class="back-btn"
+        >
+            Voltar
+        </a>
+
+    </div>
+
+</body>
+
+</html>

@@ -4,23 +4,26 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.utils import timezone
-from datetime import date, datetime
+from datetime import date
 
 from .models import Appointment
 from .utils import send_whatsapp_confirmation
 
 
-AVAILABLE_TIMES = [
-    '08:00',
-    '09:00',
-    '10:00',
-    '11:00',
-    '14:00',
-    '15:00',
-    '16:00',
-    '17:00',
-    '18:00',
-]
+AVAILABLE_TIMES = {
+    'aline': [
+        '14:00',
+        '15:00',
+        '16:00',
+        '17:00',
+        '18:00',
+    ],
+    'gustavo': [
+        '16:00',
+        '17:00',
+        '18:00',
+    ],
+}
 
 
 def get_user_professional(user):
@@ -50,13 +53,20 @@ def index(request):
         appointment_date = request.POST['appointment_date']
         appointment_time = request.POST['appointment_time']
 
-        selected_date = date.fromisoformat(
-            appointment_date
+        selected_date = date.fromisoformat(appointment_date)
+
+        professional_times = AVAILABLE_TIMES.get(
+            professional,
+            []
         )
 
         if selected_date.weekday() == 6:
 
             error = 'Não atendemos aos domingos.'
+
+        elif appointment_time not in professional_times:
+
+            error = 'Horário inválido para este profissional.'
 
         else:
 
@@ -77,10 +87,7 @@ def index(request):
 
             elif same_patient:
 
-                error = (
-                    'Você já possui uma consulta '
-                    'agendada neste dia.'
-                )
+                error = 'Você já possui uma consulta agendada neste dia.'
 
             else:
 
@@ -93,31 +100,22 @@ def index(request):
                     appointment_time=appointment_time
                 )
 
-                send_whatsapp_confirmation(
-                    appointment
-                )
+                send_whatsapp_confirmation(appointment)
 
                 success = True
 
-    return render(
-        request,
-        'appointments/index.html',
-        {
-            'success': success,
-            'error': error,
-            'available_times': AVAILABLE_TIMES,
-            'today': timezone.localdate().isoformat()
-        }
-    )
+    return render(request, 'appointments/index.html', {
+        'success': success,
+        'error': error,
+        'available_times': [],
+        'today': timezone.localdate().isoformat()
+    })
 
 
 def get_available_times(request):
 
     selected_date = request.GET.get('date')
-
-    selected_professional = request.GET.get(
-        'professional'
-    )
+    selected_professional = request.GET.get('professional')
 
     booked_times = Appointment.objects.filter(
         professional=selected_professional,
@@ -132,8 +130,13 @@ def get_available_times(request):
         for time in booked_times
     ]
 
+    professional_times = AVAILABLE_TIMES.get(
+        selected_professional,
+        []
+    )
+
     available_times = [
-        time for time in AVAILABLE_TIMES
+        time for time in professional_times
         if time not in booked_times
     ]
 
@@ -141,9 +144,7 @@ def get_available_times(request):
 
     if selected_date == today:
 
-        current_time = timezone.localtime().strftime(
-            '%H:%M'
-        )
+        current_time = timezone.localtime().strftime('%H:%M')
 
         available_times = [
             time for time in available_times
@@ -158,7 +159,6 @@ def get_available_times(request):
 def cancel_appointment(request):
 
     appointments = []
-
     success = False
 
     if request.method == 'GET':
@@ -173,9 +173,7 @@ def cancel_appointment(request):
 
     if request.method == 'POST':
 
-        appointment_id = request.POST.get(
-            'appointment_id'
-        )
+        appointment_id = request.POST.get('appointment_id')
 
         Appointment.objects.filter(
             id=appointment_id
@@ -183,14 +181,10 @@ def cancel_appointment(request):
 
         success = True
 
-    return render(
-        request,
-        'appointments/cancel.html',
-        {
-            'appointments': appointments,
-            'success': success
-        }
-    )
+    return render(request, 'appointments/cancel.html', {
+        'appointments': appointments,
+        'success': success
+    })
 
 
 def my_appointments(request):
@@ -210,29 +204,19 @@ def my_appointments(request):
                 'appointment_time'
             )
 
-    return render(
-        request,
-        'appointments/my_appointments.html',
-        {
-            'appointments': appointments
-        }
-    )
+    return render(request, 'appointments/my_appointments.html', {
+        'appointments': appointments
+    })
 
 
 @login_required
 def schedule(request):
 
     selected_date = request.GET.get('date')
-
-    selected_professional = request.GET.get(
-        'professional'
-    )
-
+    selected_professional = request.GET.get('professional')
     search = request.GET.get('search')
 
-    user_professional = get_user_professional(
-        request.user
-    )
+    user_professional = get_user_professional(request.user)
 
     if request.user.is_superuser:
 
@@ -254,10 +238,7 @@ def schedule(request):
             appointment_date=selected_date
         )
 
-    if (
-        selected_professional and
-        request.user.is_superuser
-    ):
+    if selected_professional and request.user.is_superuser:
 
         appointments = appointments.filter(
             professional=selected_professional
@@ -274,26 +255,18 @@ def schedule(request):
         'appointment_time'
     )
 
-    return render(
-        request,
-        'appointments/schedule.html',
-        {
-            'appointments': appointments,
-            'selected_date': selected_date,
-            'selected_professional': (
-                selected_professional
-            ),
-            'search': search
-        }
-    )
+    return render(request, 'appointments/schedule.html', {
+        'appointments': appointments,
+        'selected_date': selected_date,
+        'selected_professional': selected_professional,
+        'search': search
+    })
 
 
 @login_required
 def dashboard(request):
 
-    user_professional = get_user_professional(
-        request.user
-    )
+    user_professional = get_user_professional(request.user)
 
     if request.user.is_superuser:
 
@@ -330,28 +303,19 @@ def dashboard(request):
         'appointment_time'
     )[:5]
 
-    return render(
-        request,
-        'appointments/dashboard.html',
-        {
-            'total_appointments': total_appointments,
-            'today_appointments': today_appointments,
-            'aline_appointments': aline_appointments,
-            'gustavo_appointments': gustavo_appointments,
-            'next_appointments': next_appointments,
-        }
-    )
+    return render(request, 'appointments/dashboard.html', {
+        'total_appointments': total_appointments,
+        'today_appointments': today_appointments,
+        'aline_appointments': aline_appointments,
+        'gustavo_appointments': gustavo_appointments,
+        'next_appointments': next_appointments,
+    })
 
 
 @login_required
-def delete_appointment(
-    request,
-    appointment_id
-):
+def delete_appointment(request, appointment_id):
 
-    user_professional = get_user_professional(
-        request.user
-    )
+    user_professional = get_user_professional(request.user)
 
     if request.user.is_superuser:
 
@@ -375,77 +339,56 @@ def delete_appointment(
     return redirect('/schedule/')
 
 
-def professional_login(request):
+@login_required
+def edit_appointment(request, appointment_id):
 
-    error = False
+    user_professional = get_user_professional(request.user)
+
+    if request.user.is_superuser:
+
+        appointment = Appointment.objects.get(
+            id=appointment_id
+        )
+
+    elif user_professional:
+
+        appointment = Appointment.objects.get(
+            id=appointment_id,
+            professional=user_professional
+        )
+
+    else:
+
+        return redirect('/schedule/')
 
     if request.method == 'POST':
 
-        username = request.POST.get('username')
+        appointment.name = request.POST['name']
+        appointment.phone = request.POST['phone']
+        appointment.email = request.POST['email']
+        appointment.professional = request.POST['professional']
+        appointment.appointment_date = request.POST['appointment_date']
+        appointment.appointment_time = request.POST['appointment_time']
 
-        password = request.POST.get('password')
+        appointment.save()
 
-        user = authenticate(
-            request,
-            username=username,
-            password=password
-        )
+        return redirect('/schedule/')
 
-        if user is not None:
-
-            login(request, user)
-
-            return redirect('/dashboard/')
-
-        else:
-
-            error = True
-
-    return render(
-        request,
-        'appointments/login.html',
-        {
-            'error': error
-        }
+    professional_times = AVAILABLE_TIMES.get(
+        appointment.professional,
+        []
     )
 
+    return render(request, 'appointments/edit_appointment.html', {
+        'appointment': appointment,
+        'available_times': professional_times
+    })
 
-@login_required
-def professional_logout(request):
-
-    logout(request)
-
-    return redirect('/')
-
-
-def create_admin_temp(request):
-
-    if not User.objects.filter(
-        username='lucasadmin123'
-    ).exists():
-
-        User.objects.create_superuser(
-            username='lucasadmin123',
-            email='seuemail@email.com',
-            password='sua_senha_aqui'
-        )
-
-        return render(
-            request,
-            'appointments/admin_created.html'
-        )
-
-    return render(
-        request,
-        'appointments/admin_created.html'
-    )
 
 @login_required
 def calendar_view(request):
 
-    user_professional = get_user_professional(
-        request.user
-    )
+    user_professional = get_user_professional(request.user)
 
     if request.user.is_superuser:
 
@@ -470,15 +413,62 @@ def calendar_view(request):
                 f'{str(appointment.appointment_time)[:5]} - '
                 f'{appointment.name}'
             ),
-            'start': (
-                f'{appointment.appointment_date}'
-            ),
+            'start': f'{appointment.appointment_date}',
         })
 
-    return render(
-        request,
-        'appointments/calendar.html',
-        {
-            'events': events
-        }
-    )
+    return render(request, 'appointments/calendar.html', {
+        'events': events
+    })
+
+
+def professional_login(request):
+
+    error = False
+
+    if request.method == 'POST':
+
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(
+            request,
+            username=username,
+            password=password
+        )
+
+        if user is not None:
+
+            login(request, user)
+
+            return redirect('/dashboard/')
+
+        else:
+
+            error = True
+
+    return render(request, 'appointments/login.html', {
+        'error': error
+    })
+
+
+@login_required
+def professional_logout(request):
+
+    logout(request)
+
+    return redirect('/')
+
+
+def create_admin_temp(request):
+
+    if not User.objects.filter(
+        username='lucasadmin123'
+    ).exists():
+
+        User.objects.create_superuser(
+            username='lucasadmin123',
+            email='seuemail@email.com',
+            password='sua_senha_aqui'
+        )
+
+    return render(request, 'appointments/admin_created.html')

@@ -248,11 +248,13 @@
               <tr>
                 <td>{{ appointment.name }}</td>
 
-                <td>{{ appointment.professional }}</td>
+                <td>{{ appointment.get_professional_display }}</td>
 
-                <td>{{ appointment.appointment_date }}</td>
+                <td>
+                  {{ appointment.appointment_date|date:"d \d\e F \d\e Y" }}
+                </td>
 
-                <td>{{ appointment.appointment_time }}</td>
+                <td>{{ appointment.appointment_time|time:"H:i" }}</td>
               </tr>
 
               {% endfor %}
