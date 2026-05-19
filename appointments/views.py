@@ -2,9 +2,12 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import date, datetime
+
 from .models import Appointment
+from .utils import send_whatsapp_confirmation
 
 
 AVAILABLE_TIMES = [
@@ -47,7 +50,9 @@ def index(request):
         appointment_date = request.POST['appointment_date']
         appointment_time = request.POST['appointment_time']
 
-        selected_date = date.fromisoformat(appointment_date)
+        selected_date = date.fromisoformat(
+            appointment_date
+        )
 
         if selected_date.weekday() == 6:
 
@@ -72,11 +77,14 @@ def index(request):
 
             elif same_patient:
 
-                error = 'Você já possui uma consulta agendada neste dia.'
+                error = (
+                    'Você já possui uma consulta '
+                    'agendada neste dia.'
+                )
 
             else:
 
-                Appointment.objects.create(
+                appointment = Appointment.objects.create(
                     name=request.POST['name'],
                     phone=request.POST['phone'],
                     email=request.POST['email'],
@@ -85,20 +93,31 @@ def index(request):
                     appointment_time=appointment_time
                 )
 
+                send_whatsapp_confirmation(
+                    appointment
+                )
+
                 success = True
 
-    return render(request, 'appointments/index.html', {
-        'success': success,
-        'error': error,
-        'available_times': AVAILABLE_TIMES,
-        'today': timezone.localdate().isoformat()
-    })
+    return render(
+        request,
+        'appointments/index.html',
+        {
+            'success': success,
+            'error': error,
+            'available_times': AVAILABLE_TIMES,
+            'today': timezone.localdate().isoformat()
+        }
+    )
 
 
 def get_available_times(request):
 
     selected_date = request.GET.get('date')
-    selected_professional = request.GET.get('professional')
+
+    selected_professional = request.GET.get(
+        'professional'
+    )
 
     booked_times = Appointment.objects.filter(
         professional=selected_professional,
@@ -122,7 +141,9 @@ def get_available_times(request):
 
     if selected_date == today:
 
-        current_time = timezone.localtime().strftime('%H:%M')
+        current_time = timezone.localtime().strftime(
+            '%H:%M'
+        )
 
         available_times = [
             time for time in available_times
@@ -137,6 +158,7 @@ def get_available_times(request):
 def cancel_appointment(request):
 
     appointments = []
+
     success = False
 
     if request.method == 'GET':
@@ -151,7 +173,9 @@ def cancel_appointment(request):
 
     if request.method == 'POST':
 
-        appointment_id = request.POST.get('appointment_id')
+        appointment_id = request.POST.get(
+            'appointment_id'
+        )
 
         Appointment.objects.filter(
             id=appointment_id
@@ -159,20 +183,56 @@ def cancel_appointment(request):
 
         success = True
 
-    return render(request, 'appointments/cancel.html', {
-        'appointments': appointments,
-        'success': success
-    })
+    return render(
+        request,
+        'appointments/cancel.html',
+        {
+            'appointments': appointments,
+            'success': success
+        }
+    )
+
+
+def my_appointments(request):
+
+    appointments = []
+
+    if request.method == 'GET':
+
+        email = request.GET.get('email')
+
+        if email:
+
+            appointments = Appointment.objects.filter(
+                email=email
+            ).order_by(
+                'appointment_date',
+                'appointment_time'
+            )
+
+    return render(
+        request,
+        'appointments/my_appointments.html',
+        {
+            'appointments': appointments
+        }
+    )
 
 
 @login_required
 def schedule(request):
 
     selected_date = request.GET.get('date')
-    selected_professional = request.GET.get('professional')
+
+    selected_professional = request.GET.get(
+        'professional'
+    )
+
     search = request.GET.get('search')
 
-    user_professional = get_user_professional(request.user)
+    user_professional = get_user_professional(
+        request.user
+    )
 
     if request.user.is_superuser:
 
@@ -194,7 +254,10 @@ def schedule(request):
             appointment_date=selected_date
         )
 
-    if selected_professional and request.user.is_superuser:
+    if (
+        selected_professional and
+        request.user.is_superuser
+    ):
 
         appointments = appointments.filter(
             professional=selected_professional
@@ -211,18 +274,26 @@ def schedule(request):
         'appointment_time'
     )
 
-    return render(request, 'appointments/schedule.html', {
-        'appointments': appointments,
-        'selected_date': selected_date,
-        'selected_professional': selected_professional,
-        'search': search
-    })
+    return render(
+        request,
+        'appointments/schedule.html',
+        {
+            'appointments': appointments,
+            'selected_date': selected_date,
+            'selected_professional': (
+                selected_professional
+            ),
+            'search': search
+        }
+    )
 
 
 @login_required
 def dashboard(request):
 
-    user_professional = get_user_professional(request.user)
+    user_professional = get_user_professional(
+        request.user
+    )
 
     if request.user.is_superuser:
 
@@ -241,7 +312,7 @@ def dashboard(request):
     total_appointments = appointments.count()
 
     today_appointments = appointments.filter(
-        appointment_date=date.today()
+        appointment_date=timezone.localdate()
     ).count()
 
     aline_appointments = appointments.filter(
@@ -253,25 +324,34 @@ def dashboard(request):
     ).count()
 
     next_appointments = appointments.filter(
-        appointment_date__gte=date.today()
+        appointment_date__gte=timezone.localdate()
     ).order_by(
         'appointment_date',
         'appointment_time'
     )[:5]
 
-    return render(request, 'appointments/dashboard.html', {
-        'total_appointments': total_appointments,
-        'today_appointments': today_appointments,
-        'aline_appointments': aline_appointments,
-        'gustavo_appointments': gustavo_appointments,
-        'next_appointments': next_appointments,
-    })
+    return render(
+        request,
+        'appointments/dashboard.html',
+        {
+            'total_appointments': total_appointments,
+            'today_appointments': today_appointments,
+            'aline_appointments': aline_appointments,
+            'gustavo_appointments': gustavo_appointments,
+            'next_appointments': next_appointments,
+        }
+    )
 
 
 @login_required
-def delete_appointment(request, appointment_id):
+def delete_appointment(
+    request,
+    appointment_id
+):
 
-    user_professional = get_user_professional(request.user)
+    user_professional = get_user_professional(
+        request.user
+    )
 
     if request.user.is_superuser:
 
@@ -302,6 +382,7 @@ def professional_login(request):
     if request.method == 'POST':
 
         username = request.POST.get('username')
+
         password = request.POST.get('password')
 
         user = authenticate(
@@ -320,9 +401,13 @@ def professional_login(request):
 
             error = True
 
-    return render(request, 'appointments/login.html', {
-        'error': error
-    })
+    return render(
+        request,
+        'appointments/login.html',
+        {
+            'error': error
+        }
+    )
 
 
 @login_required
@@ -332,23 +417,25 @@ def professional_logout(request):
 
     return redirect('/')
 
-def my_appointments(request):
 
-    appointments = []
+def create_admin_temp(request):
 
-    if request.method == 'GET':
+    if not User.objects.filter(
+        username='lucasadmin123'
+    ).exists():
 
-        email = request.GET.get('email')
+        User.objects.create_superuser(
+            username='lucasadmin123',
+            email='seuemail@email.com',
+            password='sua_senha_aqui'
+        )
 
-        if email:
+        return render(
+            request,
+            'appointments/admin_created.html'
+        )
 
-            appointments = Appointment.objects.filter(
-                email=email
-            ).order_by(
-                'appointment_date',
-                'appointment_time'
-            )
-
-    return render(request, 'appointments/my_appointments.html', {
-        'appointments': appointments
-    })
+    return render(
+        request,
+        'appointments/admin_created.html'
+    )
