@@ -9,6 +9,7 @@ from .views import (
     delete_appointment,
     professional_login,
     professional_logout,
+    my_appointments,
 )
 
 urlpatterns = [
@@ -41,6 +42,12 @@ urlpatterns = [
         'cancel/',
         cancel_appointment,
         name='cancel'
+    ),
+
+    path(
+        'meus-agendamentos/',
+        my_appointments,
+        name='my_appointments'
     ),
 
     path(

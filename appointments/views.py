@@ -330,3 +330,24 @@ def professional_logout(request):
     logout(request)
 
     return redirect('/')
+
+def my_appointments(request):
+
+    appointments = []
+
+    if request.method == 'GET':
+
+        email = request.GET.get('email')
+
+        if email:
+
+            appointments = Appointment.objects.filter(
+                email=email
+            ).order_by(
+                'appointment_date',
+                'appointment_time'
+            )
+
+    return render(request, 'appointments/my_appointments.html', {
+        'appointments': appointments
+    })
