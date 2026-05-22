@@ -11,18 +11,38 @@ from .utils import send_whatsapp_confirmation
 
 
 AVAILABLE_TIMES = {
-    'aline': [
-        '14:00',
-        '15:00',
-        '16:00',
-        '17:00',
-        '18:00',
-    ],
-    'gustavo': [
-        '16:00',
-        '17:00',
-        '18:00',
-    ],
+    'aline': {
+        'default': [
+            '14:00',
+            '15:00',
+            '16:00',
+            '17:00',
+            '18:00',
+        ],
+        'friday': [
+            '08:00',
+            '09:00',
+            '10:00',
+            '11:00',
+            '14:00',
+            '15:00',
+            '16:00',
+            '17:00',
+            '18:00',
+        ],
+    },
+    'gustavo': {
+        'default': [
+            '16:00',
+            '17:00',
+            '18:00',
+        ],
+        'friday': [
+            '16:00',
+            '17:00',
+            '18:00',
+        ],
+    },
 }
 
 
@@ -41,6 +61,16 @@ def get_user_professional(user):
 
     return None
 
+def get_professional_times(professional, selected_date):
+
+    if not professional or not selected_date:
+        return []
+
+    if selected_date.weekday() == 4:
+        return AVAILABLE_TIMES.get(professional, {}).get('friday', [])
+
+    return AVAILABLE_TIMES.get(professional, {}).get('default', [])
+
 
 def index(request):
 
@@ -55,12 +85,12 @@ def index(request):
 
         selected_date = date.fromisoformat(appointment_date)
 
-        professional_times = AVAILABLE_TIMES.get(
-            professional,
-            []
-        )
+        professional_times = get_professional_times(
+        professional,
+        selected_date
+)
 
-        if selected_date.weekday() == 6:
+        if selected_date.weekday() in [5, 6]:
 
             error = 'Não atendemos aos domingos.'
 
@@ -130,9 +160,19 @@ def get_available_times(request):
         for time in booked_times
     ]
 
-    professional_times = AVAILABLE_TIMES.get(
+    selected_date_obj = date.fromisoformat(
+        selected_date
+    )
+
+    if selected_date_obj.weekday() in [5, 6]:
+
+        return JsonResponse({
+            'available_times': []
+        })
+
+    professional_times = get_professional_times(
         selected_professional,
-        []
+        selected_date_obj
     )
 
     available_times = [
