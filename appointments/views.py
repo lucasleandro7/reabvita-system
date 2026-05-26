@@ -344,7 +344,7 @@ def dashboard(request):
     ).order_by(
         'appointment_date',
         'appointment_time'
-    )[:5]
+)
 
     return render(request, 'appointments/dashboard.html', {
         'total_appointments': total_appointments,
