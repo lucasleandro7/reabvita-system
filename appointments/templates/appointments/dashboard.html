@@ -28,35 +28,26 @@
       }
 
       .sidebar {
-        width: 260px;
+        width: 240px;
         background: #0f172a;
         color: white;
-        padding: 30px 20px;
+        padding: 25px 18px;
       }
 
       .sidebar h2 {
-        text-align: center;
         margin-bottom: 30px;
-        font-size: 28px;
-      }
-
-      .sidebar ul {
-        list-style: none;
-      }
-
-      .sidebar li {
-        margin-bottom: 15px;
+        font-size: 26px;
       }
 
       .sidebar a {
         display: block;
-        padding: 14px;
-        background: #1e293b;
-        border-radius: 12px;
         color: white;
         text-decoration: none;
+        background: #1e293b;
+        padding: 14px;
+        border-radius: 10px;
+        margin-bottom: 12px;
         font-weight: bold;
-        transition: 0.3s;
       }
 
       .sidebar a:hover {
@@ -68,49 +59,50 @@
         padding: 30px;
       }
 
-      .header {
-        margin-bottom: 30px;
+      h1 {
+        color: #0f172a;
+        margin-bottom: 5px;
       }
 
-      .header h1 {
-        color: #0f172a;
-        margin-bottom: 10px;
+      .subtitle {
+        margin-bottom: 25px;
+        color: #334155;
       }
 
       .cards {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        grid-template-columns: repeat(4, 1fr);
         gap: 20px;
-        margin-bottom: 35px;
+        margin-bottom: 30px;
       }
 
       .card {
         background: white;
         padding: 25px;
-        border-radius: 20px;
+        border-radius: 18px;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
       }
 
       .card h3 {
-        color: #64748b;
+        font-size: 14px;
+        color: #475569;
         margin-bottom: 10px;
-        font-size: 16px;
       }
 
       .card p {
-        font-size: 36px;
+        font-size: 34px;
         font-weight: bold;
         color: #0f172a;
       }
 
-      .appointments {
+      .appointments-box {
         background: white;
         padding: 25px;
-        border-radius: 20px;
+        border-radius: 18px;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
       }
 
-      .appointments h2 {
+      .appointments-box h2 {
         margin-bottom: 20px;
         color: #0f172a;
       }
@@ -151,6 +143,10 @@
           width: 100%;
         }
 
+        .cards {
+          grid-template-columns: 1fr;
+        }
+
         table {
           display: block;
           overflow-x: auto;
@@ -164,67 +160,47 @@
       <aside class="sidebar">
         <h2>Reabvita</h2>
 
-        <ul>
-          <li>
-            <a href="/dashboard/"> Dashboard </a>
-          </li>
+        <a href="/dashboard/"> Dashboard </a>
 
-          <li>
-            <a href="/schedule/"> Agenda Lista </a>
-          </li>
+        <a href="/schedule/"> Agenda Lista </a>
 
-          <li>
-            <a href="/calendar/"> Agenda Visual </a>
-          </li>
+        <a href="/calendar/"> Agenda Visual </a>
 
-          <li>
-            <a href="/"> Novo Agendamento </a>
-          </li>
+        <a href="/"> Novo Agendamento </a>
 
-          <li>
-            <a href="/cancel/"> Cancelar Consulta </a>
-          </li>
+        <a href="/cancel/"> Cancelar Consulta </a>
 
-          <li>
-            <a href="/logout/"> Sair </a>
-          </li>
-        </ul>
+        <a href="/logout/"> Sair </a>
       </aside>
 
       <main class="content">
-        <div class="header">
-          <h1>Bem-vindo, {{ request.user.username }}</h1>
+        <h1>Bem-vindo, {{ request.user.username }}</h1>
 
-          <p>Painel geral de consultas</p>
-        </div>
+        <p class="subtitle">Painel geral de consultas</p>
 
         <div class="cards">
           <div class="card">
             <h3>Total de Consultas</h3>
-
             <p>{{ total_appointments }}</p>
           </div>
 
           <div class="card">
             <h3>Consultas Hoje</h3>
-
             <p>{{ today_appointments }}</p>
           </div>
 
           <div class="card">
             <h3>Fisioterapia - Aline</h3>
-
             <p>{{ aline_appointments }}</p>
           </div>
 
           <div class="card">
-            <h3>Funcional - Gustavo</h3>
-
+            <h3>Gustavo</h3>
             <p>{{ gustavo_appointments }}</p>
           </div>
         </div>
 
-        <div class="appointments">
+        <div class="appointments-box">
           <h2>Próximas Consultas</h2>
 
           {% if next_appointments %}
@@ -233,13 +209,9 @@
             <thead>
               <tr>
                 <th>Paciente</th>
-
                 <th>Profissional</th>
-
                 <th>Tipo</th>
-
                 <th>Data</th>
-
                 <th>Horário</th>
               </tr>
             </thead>
@@ -251,6 +223,12 @@
                 <td>{{ appointment.name }}</td>
 
                 <td>{{ appointment.get_professional_display }}</td>
+
+                <td>
+                  {% if appointment.service_type %} {{
+                  appointment.get_service_type_display }} {% else %} - {% endif
+                  %}
+                </td>
 
                 <td>
                   {{ appointment.appointment_date|date:"d \d\e F \d\e Y" }}

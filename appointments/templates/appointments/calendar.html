@@ -79,12 +79,63 @@
         border-radius: 20px;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
       }
+
+      .legend {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: bold;
+        color: #334155;
+      }
+
+      .legend-color {
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        display: inline-block;
+      }
+
+      .aline {
+        background: #2563eb;
+      }
+
+      .gustavo {
+        background: #16a34a;
+      }
+
+      .passado {
+        background: #64748b;
+      }
     </style>
   </head>
 
   <body>
     <div class="container">
       <h1>Agenda Visual</h1>
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-color aline"></span>
+          Fisioterapia - Aline
+        </div>
+
+        <div class="legend-item">
+          <span class="legend-color gustavo"></span>
+          Gustavo
+        </div>
+
+        <div class="legend-item">
+          <span class="legend-color passado"></span>
+          Consulta passada
+        </div>
+      </div>
 
       <div class="top-actions">
         <a href="/dashboard/" class="nav-btn dashboard-btn"> Dashboard </a>
