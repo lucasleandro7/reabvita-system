@@ -1,21 +1,39 @@
 from django.db import models
 
+
+PROFESSIONAL_CHOICES = [
+    ('aline', 'Fisioterapia - Aline'),
+    ('gustavo', 'Gustavo'),
+]
+
+
+SERVICE_TYPES = [
+    ('avaliacao', 'Avaliação'),
+    ('atendimento', 'Atendimento'),
+]
+
+
 class Appointment(models.Model):
 
-    PROFESSIONAL_CHOICES = [
-        ('aline', 'Fisioterapia - Aline'),
-        ('gustavo', 'Funcional - Gustavo'),
-    ]
+    name = models.CharField(
+        max_length=100
+    )
 
-    name = models.CharField(max_length=100)
-
-    phone = models.CharField(max_length=20)
+    phone = models.CharField(
+        max_length=20
+    )
 
     email = models.EmailField()
 
     professional = models.CharField(
         max_length=20,
         choices=PROFESSIONAL_CHOICES
+    )
+
+    service_type = models.CharField(
+        max_length=20,
+        choices=SERVICE_TYPES,
+        default='avaliacao'
     )
 
     appointment_date = models.DateField()
@@ -27,4 +45,9 @@ class Appointment(models.Model):
     )
 
     def __str__(self):
-        return self.name
+
+        return (
+            f'{self.name} - '
+            f'{self.get_professional_display()} - '
+            f'{self.get_service_type_display()}'
+        )

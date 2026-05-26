@@ -20,6 +20,8 @@ AVAILABLE_TIMES = {
             '18:00',
         ],
         'friday': [
+            '08:00',
+            '09:00',
             '10:00',
             '11:00',
             '14:00',
@@ -59,15 +61,22 @@ def get_user_professional(user):
 
     return None
 
+
 def get_professional_times(professional, selected_date):
 
     if not professional or not selected_date:
         return []
 
     if selected_date.weekday() == 4:
-        return AVAILABLE_TIMES.get(professional, {}).get('friday', [])
+        return AVAILABLE_TIMES.get(
+            professional,
+            {}
+        ).get('friday', [])
 
-    return AVAILABLE_TIMES.get(professional, {}).get('default', [])
+    return AVAILABLE_TIMES.get(
+        professional,
+        {}
+    ).get('default', [])
 
 
 def index(request):
@@ -78,19 +87,20 @@ def index(request):
     if request.method == 'POST':
 
         professional = request.POST['professional']
+        service_type = request.POST['service_type']
         appointment_date = request.POST['appointment_date']
         appointment_time = request.POST['appointment_time']
 
         selected_date = date.fromisoformat(appointment_date)
 
         professional_times = get_professional_times(
-        professional,
-        selected_date
-)
+            professional,
+            selected_date
+        )
 
         if selected_date.weekday() in [5, 6]:
 
-            error = 'Não atendemos aos domingos.'
+            error = 'Não atendemos aos sábados e domingos.'
 
         elif appointment_time not in professional_times:
 
@@ -124,6 +134,7 @@ def index(request):
                     phone=request.POST['phone'],
                     email=request.POST['email'],
                     professional=professional,
+                    service_type=service_type,
                     appointment_date=appointment_date,
                     appointment_time=appointment_time
                 )
@@ -145,6 +156,14 @@ def get_available_times(request):
     selected_date = request.GET.get('date')
     selected_professional = request.GET.get('professional')
 
+    selected_date_obj = date.fromisoformat(selected_date)
+
+    if selected_date_obj.weekday() in [5, 6]:
+
+        return JsonResponse({
+            'available_times': []
+        })
+
     booked_times = Appointment.objects.filter(
         professional=selected_professional,
         appointment_date=selected_date
@@ -157,16 +176,6 @@ def get_available_times(request):
         time.strftime('%H:%M')
         for time in booked_times
     ]
-
-    selected_date_obj = date.fromisoformat(
-        selected_date
-    )
-
-    if selected_date_obj.weekday() in [5, 6]:
-
-        return JsonResponse({
-            'available_times': []
-        })
 
     professional_times = get_professional_times(
         selected_professional,
@@ -262,9 +271,7 @@ def schedule(request):
 
     elif user_professional:
 
-        appointments = Appointment.objects.filter(
-            professional=user_professional
-        )
+        appointments = Appointment.objects.all()
 
     else:
 
@@ -312,9 +319,7 @@ def dashboard(request):
 
     elif user_professional:
 
-        appointments = Appointment.objects.filter(
-            professional=user_professional
-        )
+        appointments = Appointment.objects.all()
 
     else:
 
@@ -355,17 +360,10 @@ def delete_appointment(request, appointment_id):
 
     user_professional = get_user_professional(request.user)
 
-    if request.user.is_superuser:
+    if request.user.is_superuser or user_professional:
 
         appointment = Appointment.objects.get(
             id=appointment_id
-        )
-
-    elif user_professional:
-
-        appointment = Appointment.objects.get(
-            id=appointment_id,
-            professional=user_professional
         )
 
     else:
@@ -382,17 +380,10 @@ def edit_appointment(request, appointment_id):
 
     user_professional = get_user_professional(request.user)
 
-    if request.user.is_superuser:
+    if request.user.is_superuser or user_professional:
 
         appointment = Appointment.objects.get(
             id=appointment_id
-        )
-
-    elif user_professional:
-
-        appointment = Appointment.objects.get(
-            id=appointment_id,
-            professional=user_professional
         )
 
     else:
@@ -405,6 +396,7 @@ def edit_appointment(request, appointment_id):
         appointment.phone = request.POST['phone']
         appointment.email = request.POST['email']
         appointment.professional = request.POST['professional']
+        appointment.service_type = request.POST['service_type']
         appointment.appointment_date = request.POST['appointment_date']
         appointment.appointment_time = request.POST['appointment_time']
 
@@ -412,9 +404,9 @@ def edit_appointment(request, appointment_id):
 
         return redirect('/schedule/')
 
-    professional_times = AVAILABLE_TIMES.get(
+    professional_times = get_professional_times(
         appointment.professional,
-        []
+        appointment.appointment_date
     )
 
     return render(request, 'appointments/edit_appointment.html', {
@@ -434,9 +426,7 @@ def calendar_view(request):
 
     elif user_professional:
 
-        appointments = Appointment.objects.filter(
-            professional=user_professional
-        )
+        appointments = Appointment.objects.all()
 
     else:
 
@@ -446,12 +436,30 @@ def calendar_view(request):
 
     for appointment in appointments:
 
+        event_color = '#2563eb'
+
+        if appointment.professional == 'gustavo':
+
+            event_color = '#16a34a'
+
+        if appointment.appointment_date < timezone.localdate():
+
+            event_color = '#64748b'
+
         events.append({
+
             'title': (
                 f'{str(appointment.appointment_time)[:5]} - '
-                f'{appointment.name}'
+                f'{appointment.name} '
+                f'({appointment.get_professional_display()})'
             ),
+
             'start': f'{appointment.appointment_date}',
+
+            'backgroundColor': event_color,
+
+            'borderColor': event_color,
+
         })
 
     return render(request, 'appointments/calendar.html', {

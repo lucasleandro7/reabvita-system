@@ -272,6 +272,7 @@
               <th>Paciente</th>
               <th>Telefone</th>
               <th>Profissional</th>
+              <th>Tipo</th>
               <th>Data</th>
               <th>Horário</th>
               <th>Ações</th>
@@ -287,6 +288,7 @@
               <td>{{ appointment.phone }}</td>
 
               <td>{{ appointment.professional }}</td>
+              <td>{{ appointment.get_service_type_display }}</td>
 
               <td>{{ appointment.appointment_date }}</td>
 

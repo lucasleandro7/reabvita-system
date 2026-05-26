@@ -18,31 +18,25 @@
 
       body {
         font-family: Arial, sans-serif;
+        background:
+          linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
+          url("{% static 'appointments/images/fundo.jpg' %}");
+        background-size: cover;
+        background-position: center;
         min-height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
         padding: 20px;
-
-        background-image:
-          linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)),
-          url("{% static 'appointments/images/fundo.jpg' %}");
-
-        background-size: cover;
-        background-position: center;
       }
 
       .container {
         width: 100%;
-        max-width: 500px;
+        max-width: 420px;
         background: rgba(255, 255, 255, 0.95);
-
-        -webkit-backdrop-filter: blur(8px);
-        backdrop-filter: blur(8px);
-
-        padding: 35px;
-        border-radius: 25px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
       }
 
       .logo {
@@ -53,102 +47,78 @@
 
       .logo img {
         width: 120px;
-        height: 120px;
-        object-fit: cover;
-        border-radius: 50%;
-        border: 4px solid #2563eb;
       }
 
-      h1 {
-        text-align: center;
-        margin-bottom: 10px;
-        color: #0f172a;
-        font-size: 32px;
-      }
-
-      .subtitle {
-        text-align: center;
-        color: #64748b;
-        margin-bottom: 20px;
-        font-size: 15px;
-      }
-
-      .home-actions {
-        display: grid;
-        grid-template-columns: 1fr;
+      .top-buttons {
+        display: flex;
+        flex-direction: column;
         gap: 10px;
         margin-bottom: 25px;
       }
 
-      .action-link {
-        display: block;
-        text-align: center;
-        color: white;
+      .top-buttons a {
         text-decoration: none;
-        padding: 12px;
+        color: white;
+        text-align: center;
+        padding: 14px;
         border-radius: 12px;
         font-weight: bold;
         transition: 0.3s;
       }
 
-      .professional-link {
+      .professional-btn {
         background: #0f172a;
       }
 
-      .professional-link:hover {
-        background: #1e293b;
+      .professional-btn:hover {
+        background: #020617;
       }
 
-      .cancel-link {
+      .cancel-btn {
         background: #dc2626;
       }
 
-      .cancel-link:hover {
+      .cancel-btn:hover {
         background: #b91c1c;
       }
 
-      .appointments-link {
+      .appointments-btn {
         background: #16a34a;
       }
 
-      .appointments-link:hover {
+      .appointments-btn:hover {
         background: #15803d;
       }
 
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
       label {
-        display: block;
-        margin-bottom: 8px;
-        color: #334155;
         font-weight: bold;
+        color: #334155;
       }
 
       input,
       select {
         width: 100%;
         padding: 14px;
-        margin-bottom: 18px;
         border: 1px solid #cbd5e1;
         border-radius: 12px;
-        font-size: 15px;
-      }
-
-      input:focus,
-      select:focus {
-        outline: none;
-        border-color: #2563eb;
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        font-size: 16px;
       }
 
       button {
-        width: 100%;
+        border: none;
         padding: 15px;
+        border-radius: 12px;
         background: #2563eb;
         color: white;
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
         font-size: 16px;
         font-weight: bold;
+        cursor: pointer;
         transition: 0.3s;
       }
 
@@ -156,22 +126,24 @@
         background: #1d4ed8;
       }
 
-      .success-message {
+      .success {
         background: #dcfce7;
         color: #166534;
-        padding: 12px;
-        border-radius: 10px;
-        margin-bottom: 20px;
+        padding: 14px;
+        border-radius: 12px;
         text-align: center;
+        font-weight: bold;
+        margin-bottom: 20px;
       }
 
-      .error-message {
+      .error {
         background: #fee2e2;
         color: #991b1b;
-        padding: 12px;
-        border-radius: 10px;
-        margin-bottom: 20px;
+        padding: 14px;
+        border-radius: 12px;
         text-align: center;
+        font-weight: bold;
+        margin-bottom: 20px;
       }
     </style>
   </head>
@@ -181,129 +153,125 @@
       <div class="logo">
         <img
           src="{% static 'appointments/images/logo.jpg' %}"
-          alt="Logo da clínica Reabvita"
-          title="Reabvita"
+          alt="Logo Reabvita"
         />
       </div>
 
-      <h1>Reabvita</h1>
+      <div class="top-buttons">
+        <a href="/login/" class="professional-btn"> Área Profissional </a>
 
-      <p class="subtitle">Agende sua consulta de forma rápida e segura</p>
+        <a href="/cancel/" class="cancel-btn"> Cancelar Consulta </a>
 
-      <div class="home-actions">
-        <a href="/login/" class="action-link professional-link">
-          Área Profissional
-        </a>
-
-        <a href="/cancel/" class="action-link cancel-link">
-          Cancelar Consulta
-        </a>
-
-        <a href="/meus-agendamentos/" class="action-link appointments-link">
+        <a href="/my-appointments/" class="appointments-btn">
           Meus Agendamentos
         </a>
       </div>
 
       {% if success %}
-      <p class="success-message">Consulta agendada com sucesso!</p>
+
+      <div class="success">Consulta agendada com sucesso!</div>
+
       {% endif %} {% if error %}
-      <p class="error-message">{{ error }}</p>
+
+      <div class="error">{{ error }}</div>
+
       {% endif %}
 
       <form method="POST">
         {% csrf_token %}
 
-        <label for="name"> Nome </label>
+        <div>
+          <label>Nome</label>
 
-        <input
-          type="text"
-          id="name"
-          name="name"
-          placeholder="Digite seu nome"
-          title="Digite seu nome"
-          required
-        />
+          <input
+            type="text"
+            name="name"
+            placeholder="Digite seu nome"
+            required
+          />
+        </div>
 
-        <label for="phone"> Telefone </label>
+        <div>
+          <label>Telefone</label>
 
-        <input
-          type="text"
-          id="phone"
-          name="phone"
-          placeholder="Digite seu telefone"
-          title="Digite seu telefone"
-          required
-        />
+          <input
+            type="text"
+            name="phone"
+            placeholder="Digite seu telefone"
+            required
+          />
+        </div>
 
-        <label for="email"> Email </label>
+        <div>
+          <label>Email</label>
 
-        <input
-          type="email"
-          id="email"
-          name="email"
-          placeholder="Digite seu email"
-          title="Digite seu email"
-          required
-        />
+          <input
+            type="email"
+            name="email"
+            placeholder="Digite seu email"
+            required
+          />
+        </div>
 
-        <label for="professional"> Escolha o Atendimento </label>
+        <div>
+          <label>Escolha o Atendimento</label>
 
-        <select
-          id="professional"
-          name="professional"
-          title="Escolha o atendimento"
-          required
-        >
-          <option value="">Selecione</option>
+          <select id="professional" name="professional" required>
+            <option value="">Selecione</option>
 
-          <option value="aline">Fisioterapia - Aline</option>
+            <option value="aline">Fisioterapia - Aline</option>
 
-          <option value="gustavo">Funcional - Gustavo</option>
-        </select>
+            <option value="gustavo">Gustavo</option>
+          </select>
+        </div>
 
-        <label for="appointment_date"> Data da Consulta </label>
+        <div>
+          <label>Tipo de Consulta</label>
 
-        <input
-          type="date"
-          id="appointment_date"
-          name="appointment_date"
-          min="{{ today }}"
-          title="Selecione a data"
-          required
-        />
+          <select name="service_type" required>
+            <option value="">Selecione</option>
 
-        <label for="appointment_time"> Horário </label>
+            <option value="avaliacao">Avaliação</option>
 
-        <select
-          id="appointment_time"
-          name="appointment_time"
-          title="Selecione o horário"
-          required
-        >
-          <option value="">Selecione um horário</option>
+            <option value="atendimento">Atendimento</option>
+          </select>
+        </div>
 
-          {% for time in available_times %}
+        <div>
+          <label>Data da Consulta</label>
 
-          <option value="{{ time }}">{{ time }}</option>
+          <input
+            type="date"
+            id="appointment_date"
+            name="appointment_date"
+            min="{{ today }}"
+            required
+          />
+        </div>
 
-          {% endfor %}
-        </select>
+        <div>
+          <label>Horário</label>
+
+          <select id="appointment_time" name="appointment_time" required>
+            <option value="">Selecione um horário</option>
+          </select>
+        </div>
 
         <button type="submit">Agendar Consulta</button>
       </form>
     </div>
 
     <script>
-      const professional = document.getElementById("professional");
+      const professionalSelect = document.getElementById("professional");
 
-      const appointmentDate = document.getElementById("appointment_date");
+      const dateInput = document.getElementById("appointment_date");
 
-      const appointmentTime = document.getElementById("appointment_time");
+      const timeSelect = document.getElementById("appointment_time");
 
-      async function updateAvailableTimes() {
-        const selectedProfessional = professional.value;
+      async function loadAvailableTimes() {
+        const selectedProfessional = professionalSelect.value;
 
-        const selectedDate = appointmentDate.value;
+        const selectedDate = dateInput.value;
 
         if (!selectedProfessional || !selectedDate) {
           return;
@@ -315,40 +283,21 @@
 
         const data = await response.json();
 
-        appointmentTime.innerHTML = "";
+        timeSelect.innerHTML = '<option value="">Selecione um horário</option>';
 
-        const defaultOption = document.createElement("option");
-
-        defaultOption.value = "";
-
-        defaultOption.textContent = "Selecione um horário";
-
-        appointmentTime.appendChild(defaultOption);
-
-        if (data.available_times.length === 0) {
+        data.available_times.forEach((time) => {
           const option = document.createElement("option");
 
-          option.value = "";
+          option.value = time;
+          option.textContent = time;
 
-          option.textContent = "Nenhum horário disponível";
-
-          appointmentTime.appendChild(option);
-        } else {
-          data.available_times.forEach(function (time) {
-            const option = document.createElement("option");
-
-            option.value = time;
-
-            option.textContent = time;
-
-            appointmentTime.appendChild(option);
-          });
-        }
+          timeSelect.appendChild(option);
+        });
       }
 
-      professional.addEventListener("change", updateAvailableTimes);
+      professionalSelect.addEventListener("change", loadAvailableTimes);
 
-      appointmentDate.addEventListener("change", updateAvailableTimes);
+      dateInput.addEventListener("change", loadAvailableTimes);
     </script>
   </body>
 </html>
