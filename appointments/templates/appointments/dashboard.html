@@ -210,6 +210,7 @@
               <tr>
                 <th>Paciente</th>
                 <th>Profissional</th>
+                <th>Tipo</th>
                 <th>Data</th>
                 <th>Horário</th>
               </tr>
@@ -222,6 +223,8 @@
                 <td>{{ appointment.name }}</td>
 
                 <td>{{ appointment.get_professional_display }}</td>
+
+                <td>{{ appointment.get_service_type_display }}</td>
 
                 <td>{{ appointment.appointment_date|date:"d/m/Y" }}</td>
 
