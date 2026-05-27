@@ -1,3 +1,4 @@
+from .utils import send_whatsapp_confirmation
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -399,6 +400,8 @@ def edit_appointment(request, appointment_id):
         appointment.appointment_time = request.POST['appointment_time']
 
         appointment.save()
+
+        send_whatsapp_confirmation(appointment)
 
         return redirect('/schedule/')
 
