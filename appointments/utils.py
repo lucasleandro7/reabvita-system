@@ -37,8 +37,16 @@ def send_whatsapp_confirmation(appointment):
         f"Horário: {appointment.appointment_time}."
     )
 
-    client.messages.create(
-        body=message,
-        from_=from_whatsapp,
-        to=f'whatsapp:+{phone.replace("+", "")}'
-    )
+    try:
+
+        client.messages.create(
+            body=message,
+            from_=from_whatsapp,
+            to=f'whatsapp:+{phone.replace("+", "")}'
+        )
+
+        print('WhatsApp enviado com sucesso.')
+
+    except Exception as error:
+
+        print('Erro ao enviar WhatsApp:', error)
