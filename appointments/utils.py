@@ -27,6 +27,8 @@ def send_whatsapp_confirmation(appointment):
 
     phone = format_phone_to_whatsapp(appointment.phone)
 
+    print(phone)
+
     message = (
         f"Olá, {appointment.name}! "
         f"Sua consulta na Reabvita foi agendada com sucesso. "
@@ -38,5 +40,5 @@ def send_whatsapp_confirmation(appointment):
     client.messages.create(
         body=message,
         from_=from_whatsapp,
-        to=f'whatsapp:{phone}'
+        to=f'whatsapp:+{phone.replace("+", "")}'
     )

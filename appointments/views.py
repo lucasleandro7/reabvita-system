@@ -8,7 +8,6 @@ from django.utils import timezone
 from datetime import date
 
 from .models import Appointment
-from .utils import send_whatsapp_confirmation
 
 
 AVAILABLE_TIMES = {
