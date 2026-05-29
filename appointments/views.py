@@ -10,6 +10,10 @@ from datetime import date
 from .models import Appointment
 
 
+BLOCKED_DATES = [
+    '2026-06-04',
+]
+
 AVAILABLE_TIMES = {
     'aline': {
         'default': [
@@ -89,14 +93,20 @@ def index(request):
         appointment_date = request.POST['appointment_date']
         appointment_time = request.POST['appointment_time']
 
-        selected_date = date.fromisoformat(appointment_date)
+        selected_date = date.fromisoformat(
+            appointment_date
+        )
 
         professional_times = get_professional_times(
             professional,
             selected_date
         )
 
-        if selected_date.weekday() in [5, 6]:
+        if appointment_date in BLOCKED_DATES:
+
+            error = 'Não atendemos nesta data.'
+
+        elif selected_date.weekday() in [5, 6]:
 
             error = 'Não atendemos aos sábados e domingos.'
 
@@ -137,21 +147,32 @@ def index(request):
                     appointment_time=appointment_time
                 )
 
-                send_whatsapp_confirmation(appointment)
+                send_whatsapp_confirmation(
+                    appointment
+                )
 
                 success = True
 
-    return render(request, 'appointments/index.html', {
-        'success': success,
-        'error': error,
-        'available_times': [],
-        'today': timezone.localdate().isoformat()
-    })
+    return render(
+        request,
+        'appointments/index.html',
+        {
+            'success': success,
+            'error': error,
+            'available_times': [],
+            'today': timezone.localdate().isoformat()
+        }
+    )
 
 
 def get_available_times(request):
 
     selected_date = request.GET.get('date')
+    if selected_date in BLOCKED_DATES:
+
+        return JsonResponse({
+            'available_times': []
+        })
     selected_professional = request.GET.get('professional')
 
     selected_date_obj = date.fromisoformat(selected_date)
