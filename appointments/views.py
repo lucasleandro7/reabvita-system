@@ -140,7 +140,7 @@ def index(request):
                 appointment = Appointment.objects.create(
                     name=request.POST['name'],
                     phone=request.POST['phone'],
-                    email=request.POST['email'],
+                    email='',
                     professional=professional,
                     service_type=service_type,
                     appointment_date=appointment_date,
