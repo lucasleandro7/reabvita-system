@@ -123,7 +123,7 @@ def index(request):
             ).exists()
 
             same_patient = Appointment.objects.filter(
-                email=request.POST['email'],
+                phone=request.POST['phone'],
                 appointment_date=appointment_date
             ).exists()
 
@@ -140,7 +140,7 @@ def index(request):
                 appointment = Appointment.objects.create(
                     name=request.POST['name'],
                     phone=request.POST['phone'],
-                    email='',
+                    email='sememail@reabvita.com',
                     professional=professional,
                     service_type=service_type,
                     appointment_date=appointment_date,
@@ -259,12 +259,12 @@ def my_appointments(request):
 
     if request.method == 'GET':
 
-        email = request.GET.get('email')
+        phone = request.GET.get('phone')
 
-        if email:
+        if phone:
 
             appointments = Appointment.objects.filter(
-                email=email
+                phone=phone
             ).order_by(
                 'appointment_date',
                 'appointment_time'
