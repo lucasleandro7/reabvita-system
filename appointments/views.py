@@ -45,6 +45,20 @@ AVAILABLE_TIMES = {
             '18:00',
         ],
     },
+    'isabel': {
+        'default': [],
+        'friday': [
+            '08:00',
+            '09:00',
+            '10:00',
+            '11:00',
+            '14:00',
+            '15:00',
+            '16:00',
+            '17:00',
+            '18:00',
+        ],
+    },
 }
 
 
@@ -60,6 +74,9 @@ def get_user_professional(user):
 
     if 'gustavo' in username:
         return 'gustavo'
+    
+    if 'isabel' in username:
+        return 'isabel'
 
     return None
 
@@ -288,9 +305,15 @@ def schedule(request):
 
         appointments = Appointment.objects.all()
 
-    elif user_professional:
+    elif user_professional in ['aline', 'gustavo']:
 
         appointments = Appointment.objects.all()
+
+    elif user_professional == 'isabel':
+
+        appointments = Appointment.objects.filter(
+            professional='isabel'
+        )
 
     else:
 
@@ -336,9 +359,15 @@ def dashboard(request):
 
         appointments = Appointment.objects.all()
 
-    elif user_professional:
+    elif user_professional in ['aline', 'gustavo']:
 
         appointments = Appointment.objects.all()
+
+    elif user_professional == 'isabel':
+
+        appointments = Appointment.objects.filter(
+            professional='isabel'
+        )
 
     else:
 
@@ -358,18 +387,23 @@ def dashboard(request):
         professional='gustavo'
     ).count()
 
+    isabel_appointments = appointments.filter(
+        professional='isabel'
+    ).count()
+
     next_appointments = appointments.filter(
         appointment_date__gte=timezone.localdate()
     ).order_by(
         'appointment_date',
         'appointment_time'
-)
+    )
 
     return render(request, 'appointments/dashboard.html', {
         'total_appointments': total_appointments,
         'today_appointments': today_appointments,
         'aline_appointments': aline_appointments,
         'gustavo_appointments': gustavo_appointments,
+        'isabel_appointments': isabel_appointments,
         'next_appointments': next_appointments,
     })
 
@@ -379,11 +413,23 @@ def delete_appointment(request, appointment_id):
 
     user_professional = get_user_professional(request.user)
 
-    if request.user.is_superuser or user_professional:
+    appointment = Appointment.objects.get(
+        id=appointment_id
+    )
 
-        appointment = Appointment.objects.get(
-            id=appointment_id
-        )
+    if request.user.is_superuser:
+
+        pass
+
+    elif user_professional in ['aline', 'gustavo']:
+
+        pass
+
+    elif user_professional == 'isabel':
+
+        if appointment.professional != 'isabel':
+
+            return redirect('/schedule/')
 
     else:
 
@@ -399,11 +445,23 @@ def edit_appointment(request, appointment_id):
 
     user_professional = get_user_professional(request.user)
 
-    if request.user.is_superuser or user_professional:
+    appointment = Appointment.objects.get(
+        id=appointment_id
+    )
 
-        appointment = Appointment.objects.get(
-            id=appointment_id
-        )
+    if request.user.is_superuser:
+
+        pass
+
+    elif user_professional in ['aline', 'gustavo']:
+
+        pass
+
+    elif user_professional == 'isabel':
+
+        if appointment.professional != 'isabel':
+
+            return redirect('/schedule/')
 
     else:
 
@@ -445,9 +503,15 @@ def calendar_view(request):
 
         appointments = Appointment.objects.all()
 
-    elif user_professional:
+    elif user_professional in ['aline', 'gustavo']:
 
         appointments = Appointment.objects.all()
+
+    elif user_professional == 'isabel':
+
+        appointments = Appointment.objects.filter(
+            professional='isabel'
+        )
 
     else:
 
@@ -457,11 +521,15 @@ def calendar_view(request):
 
     for appointment in appointments:
 
-        event_color = '#2563eb'
+        event_color = '#2563eb'  # Aline
 
         if appointment.professional == 'gustavo':
 
             event_color = '#16a34a'
+
+        elif appointment.professional == 'isabel':
+
+            event_color = '#a855f7'
 
         if appointment.appointment_date < timezone.localdate():
 

@@ -2,8 +2,9 @@ from django.db import models
 
 
 PROFESSIONAL_CHOICES = [
-    ('aline', 'Fisioterapia - Aline'),
-    ('gustavo', 'Gustavo'),
+    ('aline', 'Aline Leandro'),
+    ('gustavo', 'Gustavo Leandro'),
+    ('isabel', 'Isabel Novais'),
 ]
 
 

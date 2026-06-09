@@ -122,6 +122,8 @@
         font-weight: bold;
         cursor: pointer;
         transition: 0.3s;
+
+        margin-top: 15px;
       }
 
       button:hover {
@@ -147,6 +149,20 @@
         font-weight: bold;
         margin-bottom: 20px;
       }
+
+     .professional-description {
+    display: none;
+    font-size: 14px;
+    color: #475569;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    line-height: 1.6;
+    background: #f8fafc;
+    padding: 14px;
+    border-radius: 8px;
+    border-left: 4px solid #b89146;
+}
+      
     </style>
   </head>
 
@@ -217,28 +233,32 @@
         </div>-->
 
         <div>
-          <label>Escolha o Atendimento</label>
+ <div>
+  <label>Escolha o Atendimento</label>
 
-          <select id="professional" name="professional" required>
-            <option value="">Selecione</option>
+  <select id="professional" name="professional" required>
+    <option value="">Selecione</option>
+    <option value="aline">Aline Leandro</option>
+    <option value="gustavo">Gustavo Leandro</option>
+    <option value="isabel">Isabel Novais</option>
+  </select>
 
-            <option value="aline">Fisioterapia - Aline</option>
+  <div id="professional-description" class="professional-description"></div>
 
-            <option value="gustavo">Gustavo</option>
-          </select>
-        </div>
+</div>
 
-        <div>
-          <label>Tipo de Consulta</label>
+<div>
+  <label>Tipo de Consulta</label>
 
-          <select name="service_type" required>
-            <option value="">Selecione</option>
+  <select name="service_type" required>
+    <option value="">Selecione</option>
 
-            <option value="avaliacao">Avaliação</option>
+    <option value="avaliacao">Avaliação</option>
 
-            <option value="atendimento">Atendimento</option>
-          </select>
-        </div>
+    <option value="atendimento">Atendimento</option>
+  </select>
+</div>
+
 
         <div>
           <label>Data da Consulta</label>
@@ -265,42 +285,63 @@
     </div>
 
     <script>
-      const professionalSelect = document.getElementById("professional");
+  const professionalSelect = document.getElementById("professional");
 
-      const dateInput = document.getElementById("appointment_date");
+  const dateInput = document.getElementById("appointment_date");
 
-      const timeSelect = document.getElementById("appointment_time");
+  const timeSelect = document.getElementById("appointment_time");
 
-      async function loadAvailableTimes() {
-        const selectedProfessional = professionalSelect.value;
+  const descriptionBox = document.getElementById("professional-description");
 
-        const selectedDate = dateInput.value;
+  const descriptions = {
+    aline:
+      "<strong>Aline Leandro:</strong><br>Fisioterapia Ortopédica, Liberação Miofascial, Ventosaterapia, Dry Needling e DTM.",
 
-        if (!selectedProfessional || !selectedDate) {
-          return;
-        }
+    gustavo:
+      "<strong>Gustavo Leandro:</strong><br>Atividades Especializadas para Idosos, Pós Reabilitação e Psicomotricidade.",
 
-        const response = await fetch(
-          `/available-times/?date=${selectedDate}&professional=${selectedProfessional}`,
-        );
+    isabel:
+      "<strong>Isabel Novais:</strong><br>Psicopedagogia e Estimulação Cognitiva para Idosos.",
+  };
 
-        const data = await response.json();
+  async function loadAvailableTimes() {
+    const selectedProfessional = professionalSelect.value;
 
-        timeSelect.innerHTML = '<option value="">Selecione um horário</option>';
+    const selectedDate = dateInput.value;
 
-        data.available_times.forEach((time) => {
-          const option = document.createElement("option");
+    if (descriptions[selectedProfessional]) {
+      descriptionBox.innerHTML = descriptions[selectedProfessional];
+      descriptionBox.style.display = "block";
+    } else {
+      descriptionBox.innerHTML = "";
+      descriptionBox.style.display = "none";
+    }
 
-          option.value = time;
-          option.textContent = time;
+    if (!selectedProfessional || !selectedDate) {
+      return;
+    }
 
-          timeSelect.appendChild(option);
-        });
-      }
+    const response = await fetch(
+      `/available-times/?date=${selectedDate}&professional=${selectedProfessional}`,
+    );
 
-      professionalSelect.addEventListener("change", loadAvailableTimes);
+    const data = await response.json();
 
-      dateInput.addEventListener("change", loadAvailableTimes);
-    </script>
+    timeSelect.innerHTML = '<option value="">Selecione um horário</option>';
+
+    data.available_times.forEach((time) => {
+      const option = document.createElement("option");
+
+      option.value = time;
+      option.textContent = time;
+
+      timeSelect.appendChild(option);
+    });
+  }
+
+  professionalSelect.addEventListener("change", loadAvailableTimes);
+
+  dateInput.addEventListener("change", loadAvailableTimes);
+</script>
   </body>
 </html>
