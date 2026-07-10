@@ -59,6 +59,15 @@ AVAILABLE_TIMES = {
             '18:00',
         ],
     },
+    'stephane': {
+        'wednesday': [
+            '08:00',
+            '09:00',
+            '10:00',
+            '11:00',
+            '12:00',
+        ]
+    },
 }
 
 
@@ -77,6 +86,9 @@ def get_user_professional(user):
     
     if 'isabel' in username:
         return 'isabel'
+    
+    elif user.username == 'stephane':
+        return 'stephane'
 
     return None
 
@@ -86,11 +98,23 @@ def get_professional_times(professional, selected_date):
     if not professional or not selected_date:
         return []
 
-    if selected_date.weekday() == 4:
-        return AVAILABLE_TIMES.get(
-            professional,
-            {}
-        ).get('friday', [])
+    # Stephane - quarta-feira
+    if professional == 'stephane':
+        if selected_date.weekday() == 2:
+            return AVAILABLE_TIMES.get(
+                professional,
+                {}
+            ).get('wednesday', [])
+        return []
+
+    # Isabel - sexta-feira
+    if professional == 'isabel':
+        if selected_date.weekday() == 4:
+            return AVAILABLE_TIMES.get(
+                professional,
+                {}
+            ).get('friday', [])
+        return []
 
     return AVAILABLE_TIMES.get(
         professional,
@@ -363,10 +387,10 @@ def dashboard(request):
 
         appointments = Appointment.objects.all()
 
-    elif user_professional == 'isabel':
+    elif user_professional in ['isabel', 'stephane']:
 
         appointments = Appointment.objects.filter(
-            professional='isabel'
+            professional=user_professional
         )
 
     else:
@@ -391,6 +415,10 @@ def dashboard(request):
         professional='isabel'
     ).count()
 
+    stephane_appointments = appointments.filter(
+    professional='stephane'
+    ).count()
+
     next_appointments = appointments.filter(
         appointment_date__gte=timezone.localdate()
     ).order_by(
@@ -404,6 +432,7 @@ def dashboard(request):
         'aline_appointments': aline_appointments,
         'gustavo_appointments': gustavo_appointments,
         'isabel_appointments': isabel_appointments,
+        'stephane_appointments': stephane_appointments,
         'next_appointments': next_appointments,
     })
 
@@ -530,6 +559,9 @@ def calendar_view(request):
         elif appointment.professional == 'isabel':
 
             event_color = '#a855f7'
+
+        if appointment.professional == 'stephane':
+            event_color = '#ec4899'
 
         if appointment.appointment_date < timezone.localdate():
 
