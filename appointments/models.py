@@ -6,6 +6,7 @@ PROFESSIONAL_CHOICES = [
     ('gustavo', 'Gustavo Leandro'),
     ('isabel', 'Isabel Novais'),
     ('stephane', 'Stephane Priscilla'),
+    ('amanda', 'Amanda Borçari'),
 ]
 
 

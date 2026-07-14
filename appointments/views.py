@@ -68,6 +68,30 @@ AVAILABLE_TIMES = {
             '12:00',
         ]
     },
+    'amanda': {
+    'monday': [
+        '08:00',
+        '09:00',
+        '10:00',
+        '11:00',
+        '14:00',
+        '15:00',
+        '16:00',
+        '17:00',
+        '18:00'
+    ],
+    'tuesday': [
+        '08:00',
+        '09:00',
+        '10:00',
+        '11:00',
+        '14:00',
+        '15:00',
+        '16:00',
+        '17:00',
+        '18:00'
+    ]
+},
 }
 
 
@@ -89,6 +113,9 @@ def get_user_professional(user):
     
     elif user.username == 'stephane':
         return 'stephane'
+    
+    elif user.username == 'amanda':
+        return 'amanda'
 
     return None
 
@@ -96,6 +123,22 @@ def get_user_professional(user):
 def get_professional_times(professional, selected_date):
 
     if not professional or not selected_date:
+        return []
+
+    # Amanda - segunda e terça-feira
+    if professional == 'amanda':
+        if selected_date.weekday() == 0:
+            return AVAILABLE_TIMES.get(
+                professional,
+                {}
+            ).get('monday', [])
+
+        if selected_date.weekday() == 1:
+            return AVAILABLE_TIMES.get(
+                professional,
+                {}
+            ).get('tuesday', [])
+
         return []
 
     # Stephane - quarta-feira
@@ -333,10 +376,10 @@ def schedule(request):
 
         appointments = Appointment.objects.all()
 
-    elif user_professional == 'isabel':
+    elif user_professional in ['isabel', 'stephane', 'amanda']:
 
         appointments = Appointment.objects.filter(
-            professional='isabel'
+            professional=user_professional
         )
 
     else:
@@ -387,7 +430,7 @@ def dashboard(request):
 
         appointments = Appointment.objects.all()
 
-    elif user_professional in ['isabel', 'stephane']:
+    elif user_professional in ['isabel', 'stephane', 'amanda']:
 
         appointments = Appointment.objects.filter(
             professional=user_professional
@@ -419,6 +462,10 @@ def dashboard(request):
     professional='stephane'
     ).count()
 
+    amanda_appointments = appointments.filter(
+    professional='amanda'
+    ).count()
+
     next_appointments = appointments.filter(
         appointment_date__gte=timezone.localdate()
     ).order_by(
@@ -433,6 +480,7 @@ def dashboard(request):
         'gustavo_appointments': gustavo_appointments,
         'isabel_appointments': isabel_appointments,
         'stephane_appointments': stephane_appointments,
+        'amanda_appointments': amanda_appointments,
         'next_appointments': next_appointments,
     })
 
@@ -454,9 +502,9 @@ def delete_appointment(request, appointment_id):
 
         pass
 
-    elif user_professional == 'isabel':
+    elif user_professional in ['isabel', 'stephane', 'amanda']:
 
-        if appointment.professional != 'isabel':
+        if appointment.professional != user_professional:
 
             return redirect('/schedule/')
 
@@ -486,9 +534,9 @@ def edit_appointment(request, appointment_id):
 
         pass
 
-    elif user_professional == 'isabel':
+    elif user_professional in ['isabel', 'stephane', 'amanda']:
 
-        if appointment.professional != 'isabel':
+        if appointment.professional != user_professional:
 
             return redirect('/schedule/')
 
@@ -536,10 +584,10 @@ def calendar_view(request):
 
         appointments = Appointment.objects.all()
 
-    elif user_professional == 'isabel':
+    elif user_professional in ['isabel', 'stephane', 'amanda']:
 
         appointments = Appointment.objects.filter(
-            professional='isabel'
+            professional=user_professional
         )
 
     else:
@@ -562,6 +610,9 @@ def calendar_view(request):
 
         if appointment.professional == 'stephane':
             event_color = '#ec4899'
+
+        if appointment.professional == 'amanda':
+            event_color = '#f97316'
 
         if appointment.appointment_date < timezone.localdate():
 
