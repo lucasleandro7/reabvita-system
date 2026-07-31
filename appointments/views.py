@@ -15,22 +15,37 @@ BLOCKED_DATES = [
 ]
 
 AVAILABLE_TIMES = {
-    'aline': {
-        'default': [
-            '14:00',
-            '15:00',
-            '16:00',
-            '17:00',
-            '18:00',
-        ],
-        'friday': [
-            '10:00',
-            '11:00',
-            '14:00',
-            '15:00',
-            '16:00',
-            '17:00',
-            '18:00',
+'aline': {
+    'default': [
+        '14:00',
+        '15:00',
+        '16:00',
+        '17:00',
+        '18:00',
+    ],
+    'tuesday': [
+        '08:00',
+        '14:00',
+        '15:00',
+        '16:00',
+        '17:00',
+        '18:00',
+    ],
+    'thursday': [
+        '08:00',
+        '14:00',
+        '15:00',
+        '16:00',
+        '17:00',
+        '18:00',
+    ],
+    'friday': [
+        '11:00',
+        '14:00',
+        '15:00',
+        '16:00',
+        '17:00',
+        '18:00',
         ],
     },
     'gustavo': {
@@ -124,6 +139,32 @@ def get_professional_times(professional, selected_date):
 
     if not professional or not selected_date:
         return []
+    
+    # Aline
+    if professional == 'aline':
+
+        if selected_date.weekday() == 1:  # terça
+            return AVAILABLE_TIMES.get(
+                professional,
+                {}
+            ).get('tuesday', [])
+
+        if selected_date.weekday() == 3:  # quinta
+            return AVAILABLE_TIMES.get(
+                professional,
+                {}
+            ).get('thursday', [])
+
+        if selected_date.weekday() == 4:  # sexta
+            return AVAILABLE_TIMES.get(
+                professional,
+                {}
+            ).get('friday', [])
+
+        return AVAILABLE_TIMES.get(
+            professional,
+            {}
+        ).get('default', [])
 
     # Amanda - segunda e terça-feira
     if professional == 'amanda':
