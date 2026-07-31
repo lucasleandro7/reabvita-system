@@ -589,7 +589,6 @@ def edit_appointment(request, appointment_id):
 
         appointment.name = request.POST['name']
         appointment.phone = request.POST['phone']
-        appointment.email = request.POST['email']
         appointment.professional = request.POST['professional']
         appointment.service_type = request.POST['service_type']
         appointment.appointment_date = request.POST['appointment_date']

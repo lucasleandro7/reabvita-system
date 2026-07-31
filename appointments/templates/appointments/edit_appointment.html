@@ -133,18 +133,7 @@
 
             </div>
 
-            <div>
-
-                <label>Email</label>
-
-                <input
-                    type="email"
-                    name="email"
-                    value="{{ appointment.email }}"
-                    required
-                >
-
-            </div>
+        
 
             <div>
 
@@ -157,20 +146,64 @@
 
                     <option
                         value="aline"
-                        {% if appointment.professional == 'aline' %}
-                        selected
-                        {% endif %}
+                        {% if appointment.professional == 'aline' %}selected{% endif %}
                     >
-                        Aline
+                        Aline Leandro
                     </option>
 
                     <option
                         value="gustavo"
-                        {% if appointment.professional == 'gustavo' %}
-                        selected
-                        {% endif %}
+                        {% if appointment.professional == 'gustavo' %}selected{% endif %}
                     >
-                        Gustavo
+                        Gustavo Leandro
+                    </option>
+
+                    <option
+                        value="isabel"
+                        {% if appointment.professional == 'isabel' %}selected{% endif %}
+                    >
+                        Isabel Novais
+                    </option>
+
+                    <option
+                        value="stephane"
+                        {% if appointment.professional == 'stephane' %}selected{% endif %}
+                    >
+                        Stephane Priscilla
+                    </option>
+
+                    <option
+                        value="amanda"
+                        {% if appointment.professional == 'amanda' %}selected{% endif %}
+                    >
+                        Amanda Borçari
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div>
+
+                <label>Tipo de Consulta</label>
+
+                <select
+                    name="service_type"
+                    required
+                >
+
+                    <option
+                        value="avaliacao"
+                        {% if appointment.service_type == 'avaliacao' %}selected{% endif %}
+                    >
+                        Avaliação
+                    </option>
+
+                    <option
+                        value="atendimento"
+                        {% if appointment.service_type == 'atendimento' %}selected{% endif %}
+                    >
+                        Atendimento
                     </option>
 
                 </select>
