@@ -9,6 +9,8 @@
 
     <title>Reabvita</title>
 
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
       * {
         margin: 0;
@@ -52,30 +54,34 @@
         border-radius: 12px;
       }
 
-      .top-buttons {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 25px;
-      }
+    .top-buttons a {
+      text-decoration: none;
+      color: white;
+      text-align: center;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: bold;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 0;
+    }
 
-      .top-buttons a {
-        text-decoration: none;
-        color: white;
-        text-align: center;
-        padding: 14px;
-        border-radius: 12px;
-        font-weight: bold;
-        transition: 0.3s;
-      }
+    .btn-icon {
+      width: 20px;
+      height: 20px;
+      filter: brightness(0) invert(1);
+    }
 
-      .professional-btn {
-        background: #b89146;
-      }
+    .professional-btn {
+      background: #b89146;
+    }
 
-      .professional-btn:hover {
-        background: #b89146;
-      }
+    .professional-btn:hover {
+      background: #9a7637;
+    }
 
       .cancel-btn {
         background: #b89146;
@@ -177,15 +183,22 @@
         />
       </div>
 
-      <div class="top-buttons">
-        <a href="/login/" class="professional-btn"> 👩‍⚕️ Área Profissional </a>
+     <div class="top-buttons">
+  <a href="/login/" class="professional-btn">
+    <img src="{% static 'icons/user.svg' %}" class="btn-icon" alt="Usuário">
+    Área Profissional
+  </a>
 
-        <a href="/cancel/" class="cancel-btn"> 🚫 Cancelar Consulta </a>
+  <a href="/cancel/" class="cancel-btn">
+    <img src="{% static 'icons/circle-x.svg' %}" class="btn-icon" alt="Cancelar">
+    Cancelar Consulta
+  </a>
 
-        <a href="/meus-agendamentos/" class="appointments-btn">
-          📅 Meus Agendamentos
-        </a>
-      </div>
+  <a href="/meus-agendamentos/" class="appointments-btn">
+    <img src="{% static 'icons/calendar.svg' %}" class="btn-icon" alt="Agendamentos">
+    Meus Agendamentos
+  </a>
+</div>
 
       {% if success %}
 
