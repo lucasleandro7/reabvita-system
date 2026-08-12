@@ -54,34 +54,34 @@
         border-radius: 12px;
       }
 
-    .top-buttons a {
-      text-decoration: none;
-      color: white;
-      text-align: center;
-      padding: 14px;
-      border-radius: 12px;
-      font-weight: bold;
-      transition: 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
+      .top-buttons a {
+        text-decoration: none;
+        color: white;
+        text-align: center;
+        padding: 14px;
+        border-radius: 12px;
+        font-weight: bold;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
 
-    .btn-icon {
-      width: 20px;
-      height: 20px;
-      filter: brightness(0) invert(1);
-    }
+      .btn-icon {
+        width: 20px;
+        height: 20px;
+        filter: brightness(0) invert(1);
+      }
 
-    .professional-btn {
-      background: #b89146;
-    }
+      .professional-btn {
+        background: #b89146;
+      }
 
-    .professional-btn:hover {
-      background: #9a7637;
-    }
+      .professional-btn:hover {
+        background: #9a7637;
+      }
 
       .cancel-btn {
         background: #b89146;
@@ -102,7 +102,13 @@
       form {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 14px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
       }
 
       label {
@@ -158,19 +164,18 @@
         margin-bottom: 20px;
       }
 
-     .professional-description {
-    display: none;
-    font-size: 14px;
-    color: #475569;
-    margin-top: 10px;
-    margin-bottom: 20px;
-    line-height: 1.6;
-    background: #f8fafc;
-    padding: 14px;
-    border-radius: 8px;
-    border-left: 4px solid #b89146;
-}
-      
+      .professional-description {
+        display: none;
+        font-size: 14px;
+        color: #475569;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        line-height: 1.6;
+        background: #f8fafc;
+        padding: 14px;
+        border-radius: 8px;
+        border-left: 4px solid #b89146;
+      }
     </style>
   </head>
 
@@ -183,22 +188,34 @@
         />
       </div>
 
-     <div class="top-buttons">
-  <a href="/login/" class="professional-btn">
-    <img src="{% static 'icons/user.svg' %}" class="btn-icon" alt="Usuário">
-    Área Profissional
-  </a>
+      <div class="top-buttons">
+        <a href="/login/" class="professional-btn">
+          <img
+            src="{% static 'icons/user.svg' %}"
+            class="btn-icon"
+            alt="Usuário"
+          />
+          Área Profissional
+        </a>
 
-  <a href="/cancel/" class="cancel-btn">
-    <img src="{% static 'icons/circle-x.svg' %}" class="btn-icon" alt="Cancelar">
-    Cancelar Consulta
-  </a>
+        <a href="/cancel/" class="cancel-btn">
+          <img
+            src="{% static 'icons/circle-x.svg' %}"
+            class="btn-icon"
+            alt="Cancelar"
+          />
+          Cancelar Consulta
+        </a>
 
-  <a href="/meus-agendamentos/" class="appointments-btn">
-    <img src="{% static 'icons/calendar.svg' %}" class="btn-icon" alt="Agendamentos">
-    Meus Agendamentos
-  </a>
-</div>
+        <a href="/meus-agendamentos/" class="appointments-btn">
+          <img
+            src="{% static 'icons/calendar.svg' %}"
+            class="btn-icon"
+            alt="Agendamentos"
+          />
+          Meus Agendamentos
+        </a>
+      </div>
 
       {% if success %}
 
@@ -213,7 +230,7 @@
       <form method="POST">
         {% csrf_token %}
 
-        <div>
+        <div class="form-group">
           <label>Nome</label>
 
           <input
@@ -224,7 +241,7 @@
           />
         </div>
 
-        <div>
+        <div class="form-group">
           <label>Telefone</label>
 
           <input
@@ -235,49 +252,42 @@
           />
         </div>
 
-        <!--
-        <div>
-          <label>Email</label>
+        <div class="form-group">
+          <label>Escolha o Atendimento</label>
 
-          <input
-            type="email"
-            name="email"
-            placeholder="Digite seu email"
-            required 
-          />
-        </div>-->
+          <select id="professional" name="professional" required>
+            <option value="">Selecione</option>
 
-        <div>
- <div>
-  <label>Escolha o Atendimento</label>
+            <option value="aline">Aline Leandro</option>
 
-  <select id="professional" name="professional" required>
-    <option value="">Selecione</option>
-    <option value="aline">Aline Leandro</option>
-    <option value="gustavo">Gustavo Leandro</option>
-    <option value="isabel">Isabel Novais</option>
-    <option value="stephane">Stephane Priscilla</option>
-    <option value="amanda">Amanda Borçari</option>
-  </select>
+            <option value="gustavo">Gustavo Leandro</option>
 
-  <div id="professional-description" class="professional-description"></div>
+            <option value="isabel">Isabel Novais</option>
 
-</div>
+            <option value="stephane">Stephane Priscilla</option>
 
-<div>
-  <label>Tipo de Consulta</label>
+            <option value="amanda">Amanda Borçari</option>
+          </select>
 
-  <select name="service_type" required>
-    <option value="">Selecione</option>
+          <div
+            id="professional-description"
+            class="professional-description"
+          ></div>
+        </div>
 
-    <option value="avaliacao">Avaliação</option>
+        <div class="form-group">
+          <label>Tipo de Consulta</label>
 
-    <option value="atendimento">Atendimento</option>
-  </select>
-</div>
+          <select name="service_type" required>
+            <option value="">Selecione</option>
 
+            <option value="avaliacao">Avaliação</option>
 
-        <div>
+            <option value="atendimento">Atendimento</option>
+          </select>
+        </div>
+
+        <div class="form-group">
           <label>Data da Consulta</label>
 
           <input
@@ -289,7 +299,7 @@
           />
         </div>
 
-        <div>
+        <div class="form-group">
           <label>Horário</label>
 
           <select id="appointment_time" name="appointment_time" required>
@@ -302,67 +312,66 @@
     </div>
 
     <script>
-  const professionalSelect = document.getElementById("professional");
+      const professionalSelect = document.getElementById("professional");
 
-  const dateInput = document.getElementById("appointment_date");
+      const dateInput = document.getElementById("appointment_date");
 
-  const timeSelect = document.getElementById("appointment_time");
+      const timeSelect = document.getElementById("appointment_time");
 
-  const descriptionBox = document.getElementById("professional-description");
+      const descriptionBox = document.getElementById(
+        "professional-description",
+      );
 
-  const descriptions = {
-    aline:
-      "• Fisioterapia Ortopédica<br>• Liberação Miofascial<br>• Ventosaterapia<br>• Dry Needling<br>• DTM",
+      const descriptions = {
+        aline:
+          "• Fisioterapia Ortopédica<br>• Liberação Miofascial<br>• Ventosaterapia<br>• Dry Needling<br>• DTM",
 
-    gustavo:
-      "• Atividades Especializadas para Idosos<br>• Pós Reabilitação<br>• Psicomotricidade",
+        gustavo:
+          "• Atividades Especializadas para Idosos<br>• Pós Reabilitação<br>• Psicomotricidade",
 
-    isabel:
-      "• Psicopedagogia<br>• Estimulação Cognitiva para Idosos",
-    stephane:
-      "• Psicologia",
-    amanda:
-      "• Nutricionista",
-  };
+        isabel: "• Psicopedagogia<br>• Estimulação Cognitiva para Idosos",
+        stephane: "• Psicologia",
+        amanda: "• Nutricionista",
+      };
 
-  async function loadAvailableTimes() {
-    const selectedProfessional = professionalSelect.value;
+      async function loadAvailableTimes() {
+        const selectedProfessional = professionalSelect.value;
 
-    const selectedDate = dateInput.value;
+        const selectedDate = dateInput.value;
 
-    if (descriptions[selectedProfessional]) {
-      descriptionBox.innerHTML = descriptions[selectedProfessional];
-      descriptionBox.style.display = "block";
-    } else {
-      descriptionBox.innerHTML = "";
-      descriptionBox.style.display = "none";
-    }
+        if (descriptions[selectedProfessional]) {
+          descriptionBox.innerHTML = descriptions[selectedProfessional];
+          descriptionBox.style.display = "block";
+        } else {
+          descriptionBox.innerHTML = "";
+          descriptionBox.style.display = "none";
+        }
 
-    if (!selectedProfessional || !selectedDate) {
-      return;
-    }
+        if (!selectedProfessional || !selectedDate) {
+          return;
+        }
 
-    const response = await fetch(
-      `/available-times/?date=${selectedDate}&professional=${selectedProfessional}`,
-    );
+        const response = await fetch(
+          `/available-times/?date=${selectedDate}&professional=${selectedProfessional}`,
+        );
 
-    const data = await response.json();
+        const data = await response.json();
 
-    timeSelect.innerHTML = '<option value="">Selecione um horário</option>';
+        timeSelect.innerHTML = '<option value="">Selecione um horário</option>';
 
-    data.available_times.forEach((time) => {
-      const option = document.createElement("option");
+        data.available_times.forEach((time) => {
+          const option = document.createElement("option");
 
-      option.value = time;
-      option.textContent = time;
+          option.value = time;
+          option.textContent = time;
 
-      timeSelect.appendChild(option);
-    });
-  }
+          timeSelect.appendChild(option);
+        });
+      }
 
-  professionalSelect.addEventListener("change", loadAvailableTimes);
+      professionalSelect.addEventListener("change", loadAvailableTimes);
 
-  dateInput.addEventListener("change", loadAvailableTimes);
-</script>
+      dateInput.addEventListener("change", loadAvailableTimes);
+    </script>
   </body>
 </html>
