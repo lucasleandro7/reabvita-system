@@ -12,6 +12,7 @@ from .models import Appointment
 
 BLOCKED_DATES = [
     '2026-06-04',
+    '2026-09-07',
 ]
 
 AVAILABLE_TIMES = {
