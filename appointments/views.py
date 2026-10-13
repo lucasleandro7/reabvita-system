@@ -207,21 +207,18 @@ def get_professional_times(professional, selected_date):
     ).get('default', [])
 
 
-def index(request):
 
+def index(request):
     success = False
     error = False
 
     if request.method == 'POST':
-
         professional = request.POST['professional']
         service_type = request.POST['service_type']
         appointment_date = request.POST['appointment_date']
         appointment_time = request.POST['appointment_time']
 
-        selected_date = date.fromisoformat(
-            appointment_date
-        )
+        selected_date = date.fromisoformat(appointment_date)
 
         professional_times = get_professional_times(
             professional,
@@ -229,40 +226,37 @@ def index(request):
         )
 
         if appointment_date in BLOCKED_DATES:
-
             error = 'Não atendemos nesta data.'
 
         elif selected_date.weekday() in [5, 6]:
-
             error = 'Não atendemos aos sábados e domingos.'
 
         elif appointment_time not in professional_times:
-
             error = 'Horário inválido para este profissional.'
 
         else:
+            # A Aline pode atender 2 pacientes por horário.
+            # Os demais profissionais continuam com 1 paciente.
+            limite_por_horario = 2 if professional == 'aline' else 1
 
-            appointment_exists = Appointment.objects.filter(
+            agendamentos_no_horario = Appointment.objects.filter(
                 professional=professional,
                 appointment_date=appointment_date,
                 appointment_time=appointment_time
-            ).exists()
+            ).count()
 
             same_patient = Appointment.objects.filter(
                 phone=request.POST['phone'],
                 appointment_date=appointment_date
             ).exists()
 
-            if appointment_exists:
-
-                error = 'Este horário já está ocupado!'
+            if agendamentos_no_horario >= limite_por_horario:
+                error = 'Este horário já está lotado!'
 
             elif same_patient:
-
                 error = 'Você já possui uma consulta agendada neste dia.'
 
             else:
-
                 appointment = Appointment.objects.create(
                     name=request.POST['name'],
                     phone=request.POST['phone'],
@@ -273,10 +267,7 @@ def index(request):
                     appointment_time=appointment_time
                 )
 
-                send_whatsapp_confirmation(
-                    appointment
-                )
-
+                send_whatsapp_confirmation(appointment)
                 success = True
 
     return render(
@@ -291,46 +282,51 @@ def index(request):
     )
 
 
+
+
 def get_available_times(request):
 
     selected_date = request.GET.get('date')
-    if selected_date in BLOCKED_DATES:
+    selected_professional = request.GET.get('professional')
 
+    if not selected_date or not selected_professional:
         return JsonResponse({
             'available_times': []
         })
-    selected_professional = request.GET.get('professional')
+
+    if selected_date in BLOCKED_DATES:
+        return JsonResponse({
+            'available_times': []
+        })
 
     selected_date_obj = date.fromisoformat(selected_date)
 
     if selected_date_obj.weekday() in [5, 6]:
-
         return JsonResponse({
             'available_times': []
         })
-
-    booked_times = Appointment.objects.filter(
-        professional=selected_professional,
-        appointment_date=selected_date
-    ).values_list(
-        'appointment_time',
-        flat=True
-    )
-
-    booked_times = [
-        time.strftime('%H:%M')
-        for time in booked_times
-    ]
 
     professional_times = get_professional_times(
         selected_professional,
         selected_date_obj
     )
 
-    available_times = [
-        time for time in professional_times
-        if time not in booked_times
-    ]
+    available_times = []
+
+    # A Aline aceita até 2 pacientes por horário.
+    # Os demais profissionais aceitam apenas 1.
+    limite_por_horario = 2 if selected_professional == 'aline' else 1
+
+    for time in professional_times:
+
+        agendamentos_no_horario = Appointment.objects.filter(
+            professional=selected_professional,
+            appointment_date=selected_date,
+            appointment_time=time
+        ).count()
+
+        if agendamentos_no_horario < limite_por_horario:
+            available_times.append(time)
 
     today = timezone.localdate().isoformat()
 
@@ -346,6 +342,7 @@ def get_available_times(request):
     return JsonResponse({
         'available_times': available_times
     })
+
 
 
 def cancel_appointment(request):
